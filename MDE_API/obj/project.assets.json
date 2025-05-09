@@ -761,6 +761,31 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
+      },
+      "MDE_API.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "BCrypt.Net-Next": "4.0.3",
+          "MDE_API.Domain": "1.0.0",
+          "Microsoft.Data.SqlClient": "6.0.1"
+        },
+        "compile": {
+          "bin/placeholder/MDE_API.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MDE_API.Application.dll": {}
+        }
+      },
+      "MDE_API.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/MDE_API.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MDE_API.Domain.dll": {}
+        }
       }
     }
   },
@@ -2171,11 +2196,22 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "MDE_API.Application/1.0.0": {
+      "type": "project",
+      "path": "../MDE_API.Application/MDE_API.Application.csproj",
+      "msbuildProject": "../MDE_API.Application/MDE_API.Application.csproj"
+    },
+    "MDE_API.Domain/1.0.0": {
+      "type": "project",
+      "path": "../MDE_API.Domain/MDE_API.Domain.csproj",
+      "msbuildProject": "../MDE_API.Domain/MDE_API.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "BCrypt.Net-Next >= 4.0.3",
+      "MDE_API.Application >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.0",
       "Microsoft.Data.SqlClient >= 6.0.1",
       "Swashbuckle.AspNetCore >= 6.6.2"
@@ -2188,11 +2224,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\MDE_API\\MDE_API\\MDE_API.csproj",
+      "projectUniqueName": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\MDE_API.csproj",
       "projectName": "MDE_API",
-      "projectPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\MDE_API\\MDE_API\\MDE_API.csproj",
+      "projectPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\MDE_API.csproj",
       "packagesPath": "C:\\Users\\Bas van Turnhout\\.nuget\\packages\\",
-      "outputPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\MDE_API\\MDE_API\\obj\\",
+      "outputPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2213,7 +2249,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\MDE_API.Application.csproj": {
+              "projectPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\MDE_API.Application.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

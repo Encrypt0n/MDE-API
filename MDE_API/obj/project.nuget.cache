@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yEiRaP5hsbI=",
+  "dgSpecHash": "0AW7LiPjwug=",
   "success": true,
-  "projectFilePath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\MDE_API\\MDE_API\\MDE_API.csproj",
+  "projectFilePath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\MDE_API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Bas van Turnhout\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Bas van Turnhout\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
