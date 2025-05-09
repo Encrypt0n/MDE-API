@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDE_API", "MDE_API\MDE_API.csproj", "{0D4A5246-2EDA-422B-AAB8-EC8336471A55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D4A5246-2EDA-422B-AAB8-EC8336471A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D4A5246-2EDA-422B-AAB8-EC8336471A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D4A5246-2EDA-422B-AAB8-EC8336471A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D4A5246-2EDA-422B-AAB8-EC8336471A55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C50EECC-27FF-421F-9AD0-74D365524B9F}
+	EndGlobalSection
+EndGlobal

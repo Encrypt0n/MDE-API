@@ -1,0 +1,6 @@
+@MDE_API_HostAddress = http://localhost:5059
+
+GET {{MDE_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
