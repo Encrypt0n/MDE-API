@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MDE_API.Domain;
+using MDE_API.Application.Interfaces;
 
 namespace MDE_API.Controllers
 {
@@ -8,10 +9,10 @@ namespace MDE_API.Controllers
     [Route("api/vpn")]
     public class VPNController : ControllerBase
     {
-        private readonly DatabaseService _db;
+        private readonly IDatabaseService _db;
         private readonly ILogger<VPNController> _logger;
 
-        public VPNController(DatabaseService db, ILogger<VPNController> logger)
+        public VPNController(IDatabaseService db, ILogger<VPNController> logger)
         {
             _db = db;
             _logger = logger;

@@ -4,17 +4,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using MDE_API.Controllers;
 using MDE_API.Domain;
-using MDE_API.Application; // if DatabaseService is here
+using MDE_API.Application;
+using MDE_API.Application.Interfaces; // if DatabaseService is here
 
 public class VPNControllerTests
 {
-    private readonly Mock<DatabaseService> _mockDb;
+    private readonly Mock<IDatabaseService> _mockDb;
     private readonly Mock<ILogger<VPNController>> _mockLogger;
     private readonly VPNController _controller;
 
     public VPNControllerTests()
     {
-        _mockDb = new Mock<DatabaseService>(); // Or mock the interface if you refactor
+        _mockDb = new Mock<IDatabaseService>(); // Or mock the interface if you refactor
         _mockLogger = new Mock<ILogger<VPNController>>();
         _controller = new VPNController(_mockDb.Object, _mockLogger.Object);
     }

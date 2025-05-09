@@ -3,7 +3,7 @@ using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
 using Microsoft.Data.SqlClient;
 
-public class DatabaseService
+public class DatabaseService: IDatabaseService
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
