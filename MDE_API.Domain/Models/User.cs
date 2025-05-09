@@ -1,4 +1,4 @@
-﻿namespace MDE_API.Models
+﻿namespace MDE_API.Domain.Models
 {
     public class User
     {

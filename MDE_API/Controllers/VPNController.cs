@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using MDE_API.Services;
+using MDE_API.Domain;
 
 namespace MDE_API.Controllers
 {

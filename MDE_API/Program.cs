@@ -1,6 +1,6 @@
 
 using Microsoft.IdentityModel.Tokens;
-using MDE_API.Services;
+using MDE_API.Domain;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
