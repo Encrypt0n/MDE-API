@@ -3,16 +3,40 @@
   "WorkspaceRootPath": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.tests\\databaseservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|solutionrelative:mde_api.tests\\databaseservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\vpncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\vpncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\machinecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\machinecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.tests\\vpncontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|solutionrelative:mde_api.tests\\vpncontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.application\\interfaces\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|solutionrelative:mde_api.application\\interfaces\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.application\\services\\databaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|solutionrelative:mde_api.application\\services\\databaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.tests\\databaseservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D96D832-A437-468A-B5C3-593EB50AC161}|MDE_API.Tests\\MDE_API.Tests.csproj|solutionrelative:mde_api.tests\\databaseservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D5C836B4-BA67-4E94-98D3-201D353AA7B3}|MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.infrastructure\\mde_api.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
@@ -23,20 +47,12 @@
       "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\controllers\\vpncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\controllers\\vpncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{0D4A5246-2EDA-422B-AAB8-EC8336471A55}|MDE_API\\MDE_API.csproj|solutionrelative:mde_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D5C836B4-BA67-4E94-98D3-201D353AA7B3}|MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.infrastructure\\sqlconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D5C836B4-BA67-4E94-98D3-201D353AA7B3}|MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj|solutionrelative:mde_api.infrastructure\\sqlconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.application\\interfaces\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{ABC40344-43B0-469D-ACC6-AD0DAAA88DB9}|MDE_API.Application\\MDE_API.Application.csproj|solutionrelative:mde_api.application\\interfaces\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DD66DA1D-ED5D-41C2-A616-B41E92514286}|MDE_API.Domain\\MDE_API.Domain.csproj|d:\\school\\onedrive - avans hogeschool\\avans\\leerjaar4\\stage\\projecten\\mde-api\\mde_api.domain\\models\\dashboardpage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -65,11 +81,63 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "DashboardController.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\DashboardController.cs",
+              "RelativeDocumentMoniker": "MDE_API\\Controllers\\DashboardController.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\DashboardController.cs",
+              "RelativeToolTip": "MDE_API\\Controllers\\DashboardController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:47:02.103Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "MDE_API\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\UserController.cs",
+              "RelativeToolTip": "MDE_API\\Controllers\\UserController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:46:58.697Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MachineController.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\MachineController.cs",
+              "RelativeDocumentMoniker": "MDE_API\\Controllers\\MachineController.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\MachineController.cs",
+              "RelativeToolTip": "MDE_API\\Controllers\\MachineController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:46:56.259Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "VPNControllerTests.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Tests\\VPNControllerTests.cs",
+              "RelativeDocumentMoniker": "MDE_API.Tests\\VPNControllerTests.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Tests\\VPNControllerTests.cs",
+              "RelativeToolTip": "MDE_API.Tests\\VPNControllerTests.cs",
+              "ViewState": "AQIAABAAAAAAAAAAAAAQwAYAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:45:31.092Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "DatabaseServiceTests.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Tests\\DatabaseServiceTests.cs",
               "RelativeDocumentMoniker": "MDE_API.Tests\\DatabaseServiceTests.cs",
@@ -82,85 +150,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Program.cs",
-              "RelativeDocumentMoniker": "MDE_API\\Program.cs",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Program.cs",
-              "RelativeToolTip": "MDE_API\\Program.cs",
-              "ViewState": "AQIAABgAAAAAAAAAAAAAACQAAAAtAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T13:25:33.747Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MDE_API.Infrastructure",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
-              "RelativeDocumentMoniker": "MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
-              "RelativeToolTip": "MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-05-09T13:20:54.993Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "SqlConnectionFactory.cs",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\SqlConnectionFactory.cs",
-              "RelativeDocumentMoniker": "MDE_API.Infrastructure\\SqlConnectionFactory.cs",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\SqlConnectionFactory.cs",
-              "RelativeToolTip": "MDE_API.Infrastructure\\SqlConnectionFactory.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T13:21:48.914Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DatabaseService.cs",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Services\\DatabaseService.cs",
-              "RelativeDocumentMoniker": "MDE_API.Application\\Services\\DatabaseService.cs",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Services\\DatabaseService.cs",
-              "RelativeToolTip": "MDE_API.Application\\Services\\DatabaseService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAuwA8AAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T13:10:33.479Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IDbConnectionFactory.cs",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
-              "RelativeDocumentMoniker": "MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
-              "RelativeToolTip": "MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAdAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-09T13:05:49.654Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\appsettings.json",
-              "RelativeDocumentMoniker": "MDE_API\\appsettings.json",
-              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\appsettings.json",
-              "RelativeToolTip": "MDE_API\\appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-04-11T12:03:52.8Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "MDE_API\\Controllers\\AuthController.cs",
@@ -173,20 +163,98 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
+              "Title": "MDE_API.Infrastructure",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
+              "RelativeToolTip": "MDE_API.Infrastructure\\MDE_API.Infrastructure.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-09T13:20:54.993Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "VPNController.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\VPNController.cs",
               "RelativeDocumentMoniker": "MDE_API\\Controllers\\VPNController.cs",
               "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Controllers\\VPNController.cs",
               "RelativeToolTip": "MDE_API\\Controllers\\VPNController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAUAAAA",
+              "ViewState": "AQIAACIAAAAAAAAAAAAAwDgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-11T12:22:36.102Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Program.cs",
+              "RelativeDocumentMoniker": "MDE_API\\Program.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\Program.cs",
+              "RelativeToolTip": "MDE_API\\Program.cs",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAACQAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:25:33.747Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DatabaseService.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Services\\DatabaseService.cs",
+              "RelativeDocumentMoniker": "MDE_API.Application\\Services\\DatabaseService.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Services\\DatabaseService.cs",
+              "RelativeToolTip": "MDE_API.Application\\Services\\DatabaseService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:10:33.479Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IDbConnectionFactory.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
+              "RelativeDocumentMoniker": "MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
+              "RelativeToolTip": "MDE_API.Application\\Interfaces\\IDbConnectionFactory.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:05:49.654Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "SqlConnectionFactory.cs",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\SqlConnectionFactory.cs",
+              "RelativeDocumentMoniker": "MDE_API.Infrastructure\\SqlConnectionFactory.cs",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Infrastructure\\SqlConnectionFactory.cs",
+              "RelativeToolTip": "MDE_API.Infrastructure\\SqlConnectionFactory.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-09T13:21:48.914Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\appsettings.json",
+              "RelativeDocumentMoniker": "MDE_API\\appsettings.json",
+              "ToolTip": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\appsettings.json",
+              "RelativeToolTip": "MDE_API\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-04-11T12:03:52.8Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "DashboardPage.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Domain\\Models\\DashboardPage.cs",
               "RelativeDocumentMoniker": "MDE_API.Domain\\Models\\DashboardPage.cs",
@@ -199,7 +267,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Domain\\Models\\User.cs",
               "RelativeDocumentMoniker": "MDE_API.Domain\\Models\\User.cs",
@@ -212,7 +280,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "Machine.cs",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API.Domain\\Models\\Machine.cs",
               "RelativeDocumentMoniker": "MDE_API.Domain\\Models\\Machine.cs",
@@ -225,7 +293,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 17,
               "Title": "Microsoft.Common.CurrentVersion.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
               "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
@@ -236,7 +304,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 16,
               "Title": "MDE_API.csproj",
               "DocumentMoniker": "D:\\School\\OneDrive - Avans Hogeschool\\Avans\\Leerjaar4\\Stage\\Projecten\\MDE-API\\MDE_API\\MDE_API.csproj",
               "RelativeDocumentMoniker": "MDE_API\\MDE_API.csproj",
