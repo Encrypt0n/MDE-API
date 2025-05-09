@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDE_API.Domain", "MDE_API.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDE_API.Infrastructure", "MDE_API.Infrastructure\MDE_API.Infrastructure.csproj", "{D5C836B4-BA67-4E94-98D3-201D353AA7B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDE_API.Tests", "MDE_API.Tests\MDE_API.Tests.csproj", "{1D96D832-A437-468A-B5C3-593EB50AC161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D5C836B4-BA67-4E94-98D3-201D353AA7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5C836B4-BA67-4E94-98D3-201D353AA7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5C836B4-BA67-4E94-98D3-201D353AA7B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D96D832-A437-468A-B5C3-593EB50AC161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D96D832-A437-468A-B5C3-593EB50AC161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D96D832-A437-468A-B5C3-593EB50AC161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D96D832-A437-468A-B5C3-593EB50AC161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
