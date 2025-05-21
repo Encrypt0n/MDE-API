@@ -7,6 +7,7 @@ using MDE_API.Domain;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
+using MDE_API.Application.Interfaces;
 
 namespace MDE_API.Controllers
 {
@@ -14,31 +15,33 @@ namespace MDE_API.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly JwtService _jwtService;
-        private readonly DatabaseService _databaseService;
+        private readonly IJWTService _jwtService;
+        private readonly IUserService _userService;
 
-        public AuthController(JwtService jwtService, DatabaseService databaseService)
+        public AuthController(IJWTService jwtService, IUserService userService)
         {
             _jwtService = jwtService;
-            _databaseService = databaseService;
+            _userService = userService;
         }
 
         
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel model)
         {
-            if (_databaseService.ValidateUser(model.Username, model.Password).Username != model.Username)
+            var user = _userService.ValidateUser(model.Username, model.Password);
+            if (user == null || user.Username != model.Username)
                 return Unauthorized("Invalid credentials.");
 
-            var token = _jwtService.GenerateToken(model.Username);
+            var token = _jwtService.GenerateToken(user.UserID);
             Debug.WriteLine(token);
             return Ok(new { token });
+
         }
 
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterModel model)
         {
-            if (!_databaseService.RegisterUser(model.Username, model.Password))
+            if (!_userService.RegisterUser(model.Username, model.Password))
                 return BadRequest("Username already exists.");
 
             return Ok("User registered successfully.");
@@ -49,6 +52,7 @@ namespace MDE_API.Controllers
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public int UserID { get; set; }
     }
 
     public class RegisterModel

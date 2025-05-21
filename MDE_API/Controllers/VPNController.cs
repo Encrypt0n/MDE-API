@@ -9,12 +9,12 @@ namespace MDE_API.Controllers
     [Route("api/vpn")]
     public class VPNController : ControllerBase
     {
-        private readonly IDatabaseService _db;
+        private readonly IVPNService _vpnService;
         private readonly ILogger<VPNController> _logger;
 
-        public VPNController(IDatabaseService db, ILogger<VPNController> logger)
+        public VPNController(IVPNService vpnService, ILogger<VPNController> logger)
         {
-            _db = db;
+            _vpnService = vpnService;
             _logger = logger;
         }
 
@@ -37,7 +37,7 @@ namespace MDE_API.Controllers
                 return BadRequest("Invalid client data.");
             }
 
-            _db.SaveClientConnection(model.ClientName, model.Description, model.UserID, model.AssignedIp);
+            _vpnService.SaveClientConnection(model.ClientName, model.Description, model.UserID, model.AssignedIp);
             _logger.LogInformation("✅ Client info saved successfully.");
 
             return Ok();

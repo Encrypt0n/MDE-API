@@ -28,6 +28,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\MDE_API.Application\MDE_API.Application.csproj" />
+	  <ProjectReference Include="..\MDE_API.Infrastructure\MDE_API.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>

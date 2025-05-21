@@ -3,6 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using MDE_API.Domain;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MDE_API.Application.Services;
+using MDE_API.Application.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using MDE_API.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Connections;
+using MDE_API.Infrastructure.Factories;
+using MDE_API.Application.Interfaces.MDE_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +19,31 @@ var rsa = RSA.Create();
 rsa.ImportFromPem(File.ReadAllText(privateKeyPath));
 var privateKey = new RsaSecurityKey(rsa);
 
-// Register JwtService with the loaded private key
-builder.Services.AddSingleton(new JwtService(privateKey, builder.Configuration["Jwt:Issuer"], builder.Configuration["Jwt:Audience"]));
+
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IMachineService, MachineService>();
+builder.Services.AddSingleton<IDashboardService, DashboardService>();
+builder.Services.AddSingleton<IVPNService, VPNService>(); // If you also create IVPNService
+builder.Services.AddSingleton<IActivityService, ActivityService>();
+
+builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
+
+builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IMachineRepository, MachineRepository>();
+builder.Services.AddSingleton<IDashboardRepository, DashboardRepository>();
+builder.Services.AddSingleton<IVPNRepository, VPNRepository>(); // If you also create IVPNService
+
+
+// Create and register the JWTService instance
+var jwtService = new JWTService(
+    privateKey,
+    builder.Configuration["Jwt:Issuer"],
+    builder.Configuration["Jwt:Audience"]
+);
+
+builder.Services.AddSingleton<IJWTService>(jwtService); // <-- this line is the fix
+
 
 builder.Services.AddControllers();
 
@@ -33,8 +63,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
-builder.Services.AddSingleton<DatabaseService>();
+
+
 
 var app = builder.Build();
 
