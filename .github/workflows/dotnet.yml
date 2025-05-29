@@ -34,6 +34,7 @@ jobs:
           dotnet sonarscanner begin \
             /k:"Encrypt0n_MDE-API" \
             /o:"encrypt0n" \
+            /d:sonar.verbose=true \
             /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
