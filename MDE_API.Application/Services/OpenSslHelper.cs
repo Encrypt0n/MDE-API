@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace MDE_API.Application.Services
 {
+    using MDE_API.Application.Interfaces;
     using System.Diagnostics;
+    using System.IO;
 
-    public class OpenSslHelper
+    public class OpenSslHelper: IOpenSslHelper
     {
         private readonly string _opensslPath;
         private readonly string _caCertPath;
@@ -21,6 +23,57 @@ namespace MDE_API.Application.Services
             _caCertPath = caCertPath;
             _caKeyPath = caKeyPath;
             _certsRootFolder = certsRootFolder;
+        }
+
+        // Helper function to encrypt a string and return Base64-encoded result
+        public string EncryptToBase64(string input, string openssl, string keyPath)
+        {
+            string tempInput = Path.GetTempFileName();
+            string tempOutput = Path.GetTempFileName();
+
+            try
+            {
+                System.IO.File.WriteAllText(tempInput, input);
+                string cmd = $"rsautl -sign -inkey \"{keyPath}\" -in \"{tempInput}\" -out \"{tempOutput}\"";
+                if (!RunOpenSSL(openssl, cmd, out var err))
+                    throw new Exception($"Encryption failed: {err}");
+
+                byte[] encryptedBytes = System.IO.File.ReadAllBytes(tempOutput);
+                return Convert.ToBase64String(encryptedBytes);
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempInput)) System.IO.File.Delete(tempInput);
+                if (System.IO.File.Exists(tempOutput)) System.IO.File.Delete(tempOutput);
+            }
+        }
+
+        // Helper to run OpenSSL commands
+        public bool RunOpenSSL(string opensslPath, string arguments, out string error)
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = opensslPath,
+                        Arguments = arguments,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                return process.ExitCode == 0;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return false;
+            }
         }
 
         public bool GenerateClientCert(string clientName, out string clientFolder, out string error)

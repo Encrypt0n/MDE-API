@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using MDE_API.Application.Services;
 using System.IO.Compression;
 using System.Diagnostics;
+using System;
+using System.IO;
 
 
 namespace MDE_API.Controllers
@@ -17,11 +19,17 @@ namespace MDE_API.Controllers
     {
         private readonly IVPNService _vpnService;
         private readonly ILogger<VPNController> _logger;
+        private readonly IOpenSslHelper _helper;
+        private readonly IFileSystem _fileSystem;
+        private readonly IProcessRunner _processRunner;
 
-        public VPNController(IVPNService vpnService, ILogger<VPNController> logger)
+        public VPNController(IVPNService vpnService, ILogger<VPNController> logger, IOpenSslHelper helper, IFileSystem fileSystem, IProcessRunner processRunner)
         {
             _vpnService = vpnService;
             _logger = logger;
+            _helper = helper;
+            _fileSystem = fileSystem;
+            _processRunner = processRunner;
         }
 
         [HttpPost("client-connected")]
@@ -69,56 +77,31 @@ namespace MDE_API.Controllers
         [HttpGet("generate-machine/{clientName}/{companyName}/{subnet}")]
         public IActionResult GenerateMachine(string clientName, string companyName, string subnet)
         {
+            string certName = $"{companyName}_machines_{clientName}";
             var opensslPath = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe";
             var caCertPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\ca.crt";
             var caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
             var certsRootFolder = @"C:\Program Files\OpenVPN\clients";
 
-            var helper = new OpenSslHelper(opensslPath, caCertPath, caKeyPath, certsRootFolder);
-            string certName = $"{companyName}_machines_{clientName}";
-
-            if (!helper.GenerateClientCert(certName, out var clientFolder, out var error))
+            if (!_helper.GenerateClientCert(certName, out var clientFolder, out var error))
                 return BadRequest(new { error = "Failed to generate cert: " + error });
 
             string companyPath = $"{companyName}_machines_{clientName}";
             string companySubnet = subnet;
 
-            // Helper function to encrypt a string and return Base64-encoded result
-            string EncryptToBase64(string input, string openssl, string keyPath)
-            {
-                string tempInput = Path.GetTempFileName();
-                string tempOutput = Path.GetTempFileName();
-
-                try
-                {
-                    System.IO.File.WriteAllText(tempInput, input);
-                    string cmd = $"rsautl -sign -inkey \"{keyPath}\" -in \"{tempInput}\" -out \"{tempOutput}\"";
-                    if (!RunOpenSSL(openssl, cmd, out var err))
-                        throw new Exception($"Encryption failed: {err}");
-
-                    byte[] encryptedBytes = System.IO.File.ReadAllBytes(tempOutput);
-                    return Convert.ToBase64String(encryptedBytes);
-                }
-                finally
-                {
-                    if (System.IO.File.Exists(tempInput)) System.IO.File.Delete(tempInput);
-                    if (System.IO.File.Exists(tempOutput)) System.IO.File.Delete(tempOutput);
-                }
-            }
-
-            string base64Company = EncryptToBase64(companyPath, opensslPath, caKeyPath);
-            string base64Subnet = EncryptToBase64(companySubnet, opensslPath, caKeyPath);
+            string base64Company = _helper.EncryptToBase64(companyPath, opensslPath, caKeyPath);
+            string base64Subnet = _helper.EncryptToBase64(companySubnet, opensslPath, caKeyPath);
 
             // Write both Base64-encoded lines into auth.txt
             string finalAuthPath = Path.Combine(clientFolder, "auth.txt");
-            System.IO.File.WriteAllLines(finalAuthPath, new[] { base64Company, base64Subnet });
+            _fileSystem.WriteAllLines(finalAuthPath, new[] { base64Company, base64Subnet });
 
             // Read remaining files
-            var clientKey = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.key"));
-            var clientCrt = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.crt"));
-            var caCrt = System.IO.File.ReadAllBytes(caCertPath);
-            var taKey = System.IO.File.ReadAllBytes(Path.Combine(@"C:\Program Files\OpenVPN\config-auto", "ta.key"));
-            var authTxt = System.IO.File.ReadAllBytes(finalAuthPath);
+            var clientKey = _fileSystem.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.key"));
+            var clientCrt = _fileSystem.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.crt"));
+            var caCrt = _fileSystem.ReadAllBytes(caCertPath);
+            var taKey = _fileSystem.ReadAllBytes(Path.Combine(@"C:\Program Files\OpenVPN\config-auto", "ta.key"));
+            var authTxt = _fileSystem.ReadAllBytes(finalAuthPath);
 
             using var zipStream = new MemoryStream();
             using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
@@ -158,31 +141,11 @@ namespace MDE_API.Controllers
             string companyPath = $"{companyName}_users_{clientName}";
             string companySubnet = subnet;
 
-            // Helper function to encrypt a string and return Base64-encoded result
-            string EncryptToBase64(string input, string openssl, string keyPath)
-            {
-                string tempInput = Path.GetTempFileName();
-                string tempOutput = Path.GetTempFileName();
+           
 
-                try
-                {
-                    System.IO.File.WriteAllText(tempInput, input);
-                    string cmd = $"rsautl -sign -inkey \"{keyPath}\" -in \"{tempInput}\" -out \"{tempOutput}\"";
-                    if (!RunOpenSSL(openssl, cmd, out var err))
-                        throw new Exception($"Encryption failed: {err}");
 
-                    byte[] encryptedBytes = System.IO.File.ReadAllBytes(tempOutput);
-                    return Convert.ToBase64String(encryptedBytes);
-                }
-                finally
-                {
-                    if (System.IO.File.Exists(tempInput)) System.IO.File.Delete(tempInput);
-                    if (System.IO.File.Exists(tempOutput)) System.IO.File.Delete(tempOutput);
-                }
-            }
-
-            string base64Company = EncryptToBase64(companyPath, opensslPath, caKeyPath);
-            string base64Subnet = EncryptToBase64(companySubnet, opensslPath, caKeyPath);
+            string base64Company = _helper.EncryptToBase64(companyPath, opensslPath, caKeyPath);
+            string base64Subnet = _helper.EncryptToBase64(companySubnet, opensslPath, caKeyPath);
 
             // Write both Base64-encoded lines into auth.txt
             string finalAuthPath = Path.Combine(clientFolder, "auth.txt");
@@ -218,33 +181,7 @@ namespace MDE_API.Controllers
 
 
 
-        // Helper to run OpenSSL commands
-        private bool RunOpenSSL(string opensslPath, string arguments, out string error)
-        {
-            try
-            {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = opensslPath,
-                        Arguments = arguments,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-                return process.ExitCode == 0;
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-                return false;
-            }
-        }
+
 
 
     }
