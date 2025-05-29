@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -26,13 +25,21 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test with coverage
-      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/coverage.opencover.xml
+      run: |
+        mkdir -p coverage
+        dotnet test ./MDE_API.Tests/MDE_API.Tests.csproj \
+          --no-build \
+          --verbosity normal \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          /p:CoverletOutput=../../coverage/coverage.opencover.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v5.0.0
       with:
-        organization: encrypt0n               # Your SonarCloud organization key (replace)
-        projectKey: Encrypt0n_MDE-API              # Your SonarCloud project key (replace)
+        organization: encrypt0n               # Replace with your org key
+        projectKey: Encrypt0n_MDE-API         # Replace with your project key
+        args: >
+          -Dsonar.cs.opencover.reportsPaths=coverage/coverage.opencover.xml
       env:
         SONAR_TOKEN: 43481cfa073dc3c47dfbba6d8cb7de73495730ad
-
