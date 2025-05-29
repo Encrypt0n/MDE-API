@@ -6,6 +6,7 @@ using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 public class UserRepositoryTests
 {
@@ -96,6 +97,53 @@ public class UserRepositoryTests
         Assert.Equal(1, result.UserID);
         Assert.Equal("hash", result.PasswordHash);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsUser_WhenRecordExists()
+    {
+        // Arrange
+        _mockReader.SetupSequence(r => r.Read())
+            .Returns(true)
+            .Returns(false);
+
+        _mockReader.Setup(r => r.GetInt32(0)).Returns(1);          // UserID
+        _mockReader.Setup(r => r.GetString(1)).Returns("testuser"); // Username
+        _mockReader.Setup(r => r.GetInt32(2)).Returns(2);          // Role
+        _mockReader.Setup(r => r.GetInt32(3)).Returns(3);          // CompanyID
+
+        _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+
+        var repo = new UserRepository(_mockFactory.Object);
+
+        // Act
+        var result = await repo.GetByIdAsync(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(1, result.UserID);
+        Assert.Equal("testuser", result.Username);
+        Assert.Equal(2, result.Role);
+        Assert.Equal(3, result.CompanyID);
+    }
+
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsNull_WhenNoRecordFound()
+    {
+        // Arrange
+        _mockReader.Setup(r => r.Read()).Returns(false);
+        _mockCommand.Setup(c => c.ExecuteReader()).Returns(_mockReader.Object);
+
+        var repo = new UserRepository(_mockFactory.Object);
+
+        // Act
+        var result = await repo.GetByIdAsync(999); // any id, no record found
+
+        // Assert
+        Assert.Null(result);
+    }
+
+
 
     [Fact]
     public async Task GetAllAsync_ShouldReturnListOfUsers()
