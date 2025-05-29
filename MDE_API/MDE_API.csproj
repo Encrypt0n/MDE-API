@@ -17,6 +17,12 @@
 		</None>
 	</ItemGroup>
 
+	<PropertyGroup>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+
 
 	<ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

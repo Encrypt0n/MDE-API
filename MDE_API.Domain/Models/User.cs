@@ -4,5 +4,9 @@
     {
         public int UserID { get; set; }
         public string Username { get; set; }
+
+        public int Role { get; set; }
+
+        public int CompanyID { get; set; }
     }
 }

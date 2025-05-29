@@ -3,46 +3,50 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace MDE_API.Infrastructure.Repositories
 {
     public class ActivityRepository : IActivityRepository
     {
-        private readonly string _connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public ActivityRepository(IConfiguration config)
+        public ActivityRepository(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = config.GetConnectionString("DefaultConnection");
+            _connectionFactory = connectionFactory;
         }
 
         public void LogActivity(UserActivityLog activity)
         {
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("INSERT INTO UserActivityLog (UserId, MachineId, Action, Target, Timestamp, IpAddress, UserAgent) VALUES (@UserId, @MachineId, @Action, @Target, @Timestamp, @IpAddress, @UserAgent)", connection);
+            using var con = _connectionFactory.CreateConnection();
+            con.Open();
 
-            command.Parameters.AddWithValue("@UserId", activity.UserId);
-            command.Parameters.AddWithValue("@MachineId", activity.MachineId);
-            command.Parameters.AddWithValue("@Action", activity.Action);
-            command.Parameters.AddWithValue("@Target", (object?)activity.Target ?? DBNull.Value);
-            command.Parameters.AddWithValue("@Timestamp", activity.Timestamp);
-            command.Parameters.AddWithValue("@IpAddress", (object?)activity.IpAddress ?? DBNull.Value);
-            command.Parameters.AddWithValue("@UserAgent", (object?)activity.UserAgent ?? DBNull.Value);
+            using var cmd = con.CreateCommand();
+            cmd.CommandText = @"INSERT INTO UserActivityLog (UserId, MachineId, Action, Target, Timestamp, IpAddress, UserAgent)
+                                 VALUES (@UserId, @MachineId, @Action, @Target, @Timestamp, @IpAddress, @UserAgent)";
 
-            connection.Open();
-            command.ExecuteNonQuery();
+            AddParam(cmd.Parameters, "@UserId", activity.UserId);
+            AddParam(cmd.Parameters, "@MachineId", activity.MachineId);
+            AddParam(cmd.Parameters, "@Action", activity.Action);
+            AddParam(cmd.Parameters, "@Target", activity.Target);
+            AddParam(cmd.Parameters, "@Timestamp", activity.Timestamp);
+            AddParam(cmd.Parameters, "@IpAddress", activity.IpAddress);
+            AddParam(cmd.Parameters, "@UserAgent", activity.UserAgent);
+
+            cmd.ExecuteNonQuery();
         }
 
         public ObservableCollection<UserActivityLog> GetActivitiesForMachine(int machineId)
         {
             var result = new ObservableCollection<UserActivityLog>();
 
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("SELECT * FROM UserActivityLog WHERE MachineId = @MachineId ORDER BY Timestamp DESC", connection);
-            command.Parameters.AddWithValue("@MachineId", machineId);
+            using var con = _connectionFactory.CreateConnection();
+            con.Open();
 
-            connection.Open();
-            using var reader = command.ExecuteReader();
+            using var cmd = con.CreateCommand();
+            cmd.CommandText = "SELECT * FROM UserActivityLog WHERE MachineId = @MachineId ORDER BY Timestamp DESC";
+            AddParam(cmd.Parameters, "@MachineId", machineId);
+
+            using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 result.Add(new UserActivityLog
@@ -59,6 +63,12 @@ namespace MDE_API.Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        private void AddParam(IDataParameterCollection parameters, string name, object? value)
+        {
+            var param = new SqlParameter(name, value ?? DBNull.Value);
+            parameters.Add(param);
         }
     }
 }

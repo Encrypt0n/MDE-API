@@ -32,7 +32,7 @@ namespace MDE_API.Controllers
             if (user == null || user.Username != model.Username)
                 return Unauthorized("Invalid credentials.");
 
-            var token = _jwtService.GenerateToken(user.UserID);
+            var token = _jwtService.GenerateToken(user.UserID, user.Role, user.CompanyID);
             Debug.WriteLine(token);
             return Ok(new { token });
 
@@ -41,7 +41,7 @@ namespace MDE_API.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterModel model)
         {
-            if (!_userService.RegisterUser(model.Username, model.Password))
+            if (!_userService.RegisterUser(model.Username, model.Password, model.CompanyID))
                 return BadRequest("Username already exists.");
 
             return Ok("User registered successfully.");
@@ -59,5 +59,6 @@ namespace MDE_API.Controllers
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public int CompanyID { get; set; }
     }
 }

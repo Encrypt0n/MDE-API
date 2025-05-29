@@ -20,9 +20,9 @@ namespace MDE_API.Application.Services
                 _vpnRepository = vpnRepository;
             }
 
-            public void SaveClientConnection(string clientName, string description, int userId, string assignedIp)
+            public void SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
             {
-                _vpnRepository.SaveClientConnection(clientName, description, userId, assignedIp);
+                _vpnRepository.SaveClientConnection(clientName, description, companyId, assignedIp, uibuilderUrls);
             }
         }
 

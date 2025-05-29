@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MDE_API.Domain.Models;
 using System.Data;
+using System.Net.Http.Json;
+using System.Net.Http;
 
 namespace MDE_API.Application.Services
 {
@@ -24,15 +26,22 @@ namespace MDE_API.Application.Services
             _machineRepository = machineRepository;
         }
 
-        public ObservableCollection<Machine> GetMachinesForUser(int userId)
+        public ObservableCollection<Machine> GetMachinesForCompany(int companyId)
         {
-            return _machineRepository.GetMachinesForUser(userId);
+            return _machineRepository.GetMachinesForCompany(companyId);
         }
 
         public Machine GetMachineById(int machineId)
         {
             return _machineRepository.GetMachineById(machineId);
         }
-        
+
+        public void UpdateDashboardUrl(int machineId, string dashboardUrl)
+        {
+            _machineRepository.UpdateDashboardUrl(machineId, dashboardUrl);
+        }
+
+
+
     }
 }

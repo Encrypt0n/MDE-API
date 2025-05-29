@@ -9,8 +9,10 @@ namespace MDE_API.Application.Interfaces
 {
     public interface IUserService
     {
-        bool RegisterUser(string username, string password);
+        bool RegisterUser(string username, string password, int companyId);
         User ValidateUser(string username, string password);
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User?> GetUserByIdAsync(int id);
 
     }
 }

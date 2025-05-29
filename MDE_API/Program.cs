@@ -1,4 +1,4 @@
-
+﻿
 using Microsoft.IdentityModel.Tokens;
 using MDE_API.Domain;
 using System.Security.Cryptography;
@@ -10,6 +10,7 @@ using MDE_API.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Connections;
 using MDE_API.Infrastructure.Factories;
 using MDE_API.Application.Interfaces.MDE_API.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +26,12 @@ builder.Services.AddSingleton<IMachineService, MachineService>();
 builder.Services.AddSingleton<IDashboardService, DashboardService>();
 builder.Services.AddSingleton<IVPNService, VPNService>(); // If you also create IVPNService
 builder.Services.AddSingleton<IActivityService, ActivityService>();
+builder.Services.AddSingleton<ICompanyService, CompanyService>();
 
 builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
 
 builder.Services.AddSingleton<IActivityRepository, ActivityRepository>();
+builder.Services.AddSingleton<ICompanyRepository, CompanyRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IMachineRepository, MachineRepository>();
 builder.Services.AddSingleton<IDashboardRepository, DashboardRepository>();
@@ -74,3 +77,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
+

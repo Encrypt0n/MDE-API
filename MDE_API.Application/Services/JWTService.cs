@@ -22,7 +22,7 @@ public class JWTService: IJWTService
         _audience = audience;
     }
 
-    public string GenerateToken(int userid)
+    public string GenerateToken(int userid, int role, int companyId)
     {
         var handler = new JsonWebTokenHandler();
 
@@ -31,6 +31,8 @@ public class JWTService: IJWTService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Sub, userid.ToString()),
+                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Typ, role.ToString()),
+                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Nbf, companyId.ToString()),
                 new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             }),
             Expires = DateTime.UtcNow.AddHours(1),

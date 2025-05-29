@@ -2,6 +2,12 @@
 using Microsoft.Data.SqlClient;
 using MDE_API.Domain;
 using MDE_API.Application.Interfaces;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using MDE_API.Application.Services;
+using System.IO.Compression;
+using System.Diagnostics;
+
 
 namespace MDE_API.Controllers
 {
@@ -18,7 +24,6 @@ namespace MDE_API.Controllers
             _logger = logger;
         }
 
-
         [HttpPost("client-connected")]
         public IActionResult ClientConnected([FromBody] VpnClientConnectModel model)
         {
@@ -26,32 +31,230 @@ namespace MDE_API.Controllers
             _logger.LogInformation("📛 ClientName: {ClientName}", model.ClientName);
             _logger.LogInformation("🌐 AssignedIp: {AssignedIp}", model.AssignedIp);
             _logger.LogInformation("📝 Description: {Description}", model.Description);
-            _logger.LogInformation("👤 UserID: {UserID}", model.UserID);
+            _logger.LogInformation("👤 UserID: {}", model.CompanyID);
+
+            if (model.UiBuilderUrls?.Count > 0)
+            {
+                _logger.LogInformation("📄 Received uibuilder URLs: ", model.UiBuilderUrls);
+                _logger.LogInformation("📄 Received uibuilder URLs: {Urls}", string.Join(", ", model.UiBuilderUrls));
+            }
 
             if (string.IsNullOrWhiteSpace(model.ClientName) ||
                 string.IsNullOrWhiteSpace(model.AssignedIp) ||
                 string.IsNullOrWhiteSpace(model.Description) ||
-                model.UserID <= 0)
+                model.CompanyID <= 0)
             {
                 _logger.LogWarning("⚠️ Invalid data received from VPN client.");
                 return BadRequest("Invalid client data.");
             }
 
-            _vpnService.SaveClientConnection(model.ClientName, model.Description, model.UserID, model.AssignedIp);
+            _vpnService.SaveClientConnection(model.ClientName, model.Description, model.CompanyID, model.AssignedIp, model.UiBuilderUrls);
             _logger.LogInformation("✅ Client info saved successfully.");
+
+            _logger.LogInformation("📄 Received uibuilder URLs: ", model.UiBuilderUrls);
+
+            if (model.UiBuilderUrls?.Count > 0)
+            {
+                _logger.LogInformation("📄 Received uibuilder URLs: ", model.UiBuilderUrls);
+                _logger.LogInformation("📄 Received uibuilder URLs: {Urls}", string.Join(", ", model.UiBuilderUrls));
+            }
+            else
+            {
+                _logger.LogInformation("📄 No uibuilder URLs provided.");
+            }
 
             return Ok();
         }
+
+        [HttpGet("generate-machine/{clientName}/{companyName}/{subnet}")]
+        public IActionResult GenerateMachine(string clientName, string companyName, string subnet)
+        {
+            var opensslPath = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe";
+            var caCertPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\ca.crt";
+            var caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
+            var certsRootFolder = @"C:\Program Files\OpenVPN\clients";
+
+            var helper = new OpenSslHelper(opensslPath, caCertPath, caKeyPath, certsRootFolder);
+            string certName = $"{companyName}_machines_{clientName}";
+
+            if (!helper.GenerateClientCert(certName, out var clientFolder, out var error))
+                return BadRequest(new { error = "Failed to generate cert: " + error });
+
+            string companyPath = $"{companyName}_machines_{clientName}";
+            string companySubnet = subnet;
+
+            // Helper function to encrypt a string and return Base64-encoded result
+            string EncryptToBase64(string input, string openssl, string keyPath)
+            {
+                string tempInput = Path.GetTempFileName();
+                string tempOutput = Path.GetTempFileName();
+
+                try
+                {
+                    System.IO.File.WriteAllText(tempInput, input);
+                    string cmd = $"rsautl -sign -inkey \"{keyPath}\" -in \"{tempInput}\" -out \"{tempOutput}\"";
+                    if (!RunOpenSSL(openssl, cmd, out var err))
+                        throw new Exception($"Encryption failed: {err}");
+
+                    byte[] encryptedBytes = System.IO.File.ReadAllBytes(tempOutput);
+                    return Convert.ToBase64String(encryptedBytes);
+                }
+                finally
+                {
+                    if (System.IO.File.Exists(tempInput)) System.IO.File.Delete(tempInput);
+                    if (System.IO.File.Exists(tempOutput)) System.IO.File.Delete(tempOutput);
+                }
+            }
+
+            string base64Company = EncryptToBase64(companyPath, opensslPath, caKeyPath);
+            string base64Subnet = EncryptToBase64(companySubnet, opensslPath, caKeyPath);
+
+            // Write both Base64-encoded lines into auth.txt
+            string finalAuthPath = Path.Combine(clientFolder, "auth.txt");
+            System.IO.File.WriteAllLines(finalAuthPath, new[] { base64Company, base64Subnet });
+
+            // Read remaining files
+            var clientKey = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.key"));
+            var clientCrt = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.crt"));
+            var caCrt = System.IO.File.ReadAllBytes(caCertPath);
+            var taKey = System.IO.File.ReadAllBytes(Path.Combine(@"C:\Program Files\OpenVPN\config-auto", "ta.key"));
+            var authTxt = System.IO.File.ReadAllBytes(finalAuthPath);
+
+            using var zipStream = new MemoryStream();
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+            {
+                void AddFile(string fileName, byte[] content)
+                {
+                    var entry = archive.CreateEntry(fileName);
+                    using var stream = entry.Open();
+                    stream.Write(content, 0, content.Length);
+                }
+
+                AddFile("client.crt", clientCrt);
+                AddFile("client.key", clientKey);
+                AddFile("ca.crt", caCrt);
+                AddFile("ta.key", taKey);
+                AddFile("auth.txt", authTxt);
+            }
+
+            zipStream.Seek(0, SeekOrigin.Begin);
+            return File(zipStream.ToArray(), "application/zip", $"openvpn_client_{clientName}.zip");
+        }
+
+        [HttpGet("generate-user/{clientName}/{companyName}/{subnet}")]
+        public IActionResult GenerateUser(string clientName, string companyName, string subnet)
+        {
+            var opensslPath = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe";
+            var caCertPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\ca.crt";
+            var caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
+            var certsRootFolder = @"C:\Program Files\OpenVPN\clients";
+
+            var helper = new OpenSslHelper(opensslPath, caCertPath, caKeyPath, certsRootFolder);
+            string certName = $"{companyName}_users_{clientName}";
+
+            if (!helper.GenerateClientCert(certName, out var clientFolder, out var error))
+                return BadRequest(new { error = "Failed to generate cert: " + error });
+
+            string companyPath = $"{companyName}_users_{clientName}";
+            string companySubnet = subnet;
+
+            // Helper function to encrypt a string and return Base64-encoded result
+            string EncryptToBase64(string input, string openssl, string keyPath)
+            {
+                string tempInput = Path.GetTempFileName();
+                string tempOutput = Path.GetTempFileName();
+
+                try
+                {
+                    System.IO.File.WriteAllText(tempInput, input);
+                    string cmd = $"rsautl -sign -inkey \"{keyPath}\" -in \"{tempInput}\" -out \"{tempOutput}\"";
+                    if (!RunOpenSSL(openssl, cmd, out var err))
+                        throw new Exception($"Encryption failed: {err}");
+
+                    byte[] encryptedBytes = System.IO.File.ReadAllBytes(tempOutput);
+                    return Convert.ToBase64String(encryptedBytes);
+                }
+                finally
+                {
+                    if (System.IO.File.Exists(tempInput)) System.IO.File.Delete(tempInput);
+                    if (System.IO.File.Exists(tempOutput)) System.IO.File.Delete(tempOutput);
+                }
+            }
+
+            string base64Company = EncryptToBase64(companyPath, opensslPath, caKeyPath);
+            string base64Subnet = EncryptToBase64(companySubnet, opensslPath, caKeyPath);
+
+            // Write both Base64-encoded lines into auth.txt
+            string finalAuthPath = Path.Combine(clientFolder, "auth.txt");
+            System.IO.File.WriteAllLines(finalAuthPath, new[] { base64Company, base64Subnet });
+
+            // Read remaining files
+            var clientKey = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.key"));
+            var clientCrt = System.IO.File.ReadAllBytes(Path.Combine(clientFolder, $"{certName}.crt"));
+            var caCrt = System.IO.File.ReadAllBytes(caCertPath);
+            var taKey = System.IO.File.ReadAllBytes(Path.Combine(@"C:\Program Files\OpenVPN\config-auto", "ta.key"));
+            var authTxt = System.IO.File.ReadAllBytes(finalAuthPath);
+
+            using var zipStream = new MemoryStream();
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+            {
+                void AddFile(string fileName, byte[] content)
+                {
+                    var entry = archive.CreateEntry(fileName);
+                    using var stream = entry.Open();
+                    stream.Write(content, 0, content.Length);
+                }
+
+                AddFile("client.crt", clientCrt);
+                AddFile("client.key", clientKey);
+                AddFile("ca.crt", caCrt);
+                AddFile("ta.key", taKey);
+                AddFile("auth.txt", authTxt);
+            }
+
+            zipStream.Seek(0, SeekOrigin.Begin);
+            return File(zipStream.ToArray(), "application/zip", $"openvpn_client_{clientName}.zip");
+        }
+
+
+
+        // Helper to run OpenSSL commands
+        private bool RunOpenSSL(string opensslPath, string arguments, out string error)
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = opensslPath,
+                        Arguments = arguments,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                return process.ExitCode == 0;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+        }
+
+
     }
 
-    public class VpnClientConnectModel
+        public class VpnClientConnectModel
     {
         public string ClientName { get; set; }
-
         public string Description { get; set; }
-
-        public int UserID { get; set; }
+        public int CompanyID { get; set; }
         public string AssignedIp { get; set; }
+        public List<string> UiBuilderUrls { get; set; }
     }
-
 }

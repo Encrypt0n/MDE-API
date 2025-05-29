@@ -10,8 +10,10 @@ namespace MDE_API.Application.Interfaces
 {
     public interface IMachineService
     {
-        ObservableCollection<Machine> GetMachinesForUser(int userId);
+        ObservableCollection<Machine> GetMachinesForCompany(int companyId);
         Machine GetMachineById(int machineId);
+
+        void UpdateDashboardUrl(int machineId, string dashboardUrl);
 
     }
 }

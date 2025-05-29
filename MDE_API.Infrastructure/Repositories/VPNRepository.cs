@@ -18,37 +18,90 @@ namespace MDE_API.Infrastructure.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public void SaveClientConnection(string clientName, string description, int userId, string assignedIp)
+        public void SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
         {
             using var con = _connectionFactory.CreateConnection();
             con.Open();
 
-            string query = @"MERGE INTO Machines AS Target
-                         USING (VALUES (@Name, @Description, @UserID, @IP)) AS Source (Name, Description, UserID, IP)
-                         ON Target.Name = Source.Name AND Target.UserID = Source.UserID
-                         WHEN MATCHED THEN
-                             UPDATE SET Target.IP = Source.IP, Target.Description = Source.Description
-                         WHEN NOT MATCHED THEN
-                             INSERT (Name, Description, UserID, IP)
-                             VALUES (Source.Name, Source.Description, Source.UserID, Source.IP);";
+            int machineId;
 
-            using var cmd = con.CreateCommand();
-            cmd.CommandText = query;
+            // First try to get the existing machine
+            using (var checkCmd = con.CreateCommand())
+            {
+                checkCmd.CommandText = "SELECT MachineID FROM Machines WHERE Name = @Name";
+                checkCmd.Parameters.Add(new SqlParameter("@Name", clientName ?? (object)DBNull.Value));
 
-            var p = cmd.Parameters;
-            AddParam(p, "@Name", clientName);
-            AddParam(p, "@Description", description);
-            AddParam(p, "@UserID", userId);
-            AddParam(p, "@IP", assignedIp);
+                object result = checkCmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    machineId = Convert.ToInt32(result);
 
-            cmd.ExecuteNonQuery();
+                    // Update the machine info
+                    using var updateCmd = con.CreateCommand();
+                    updateCmd.CommandText = @"
+                UPDATE Machines 
+                SET Description = @Description, IP = @IP 
+                WHERE MachineID = @MachineID";
+
+                    updateCmd.Parameters.Add(new SqlParameter("@Description", description ?? (object)DBNull.Value));
+                    updateCmd.Parameters.Add(new SqlParameter("@IP", assignedIp ?? (object)DBNull.Value));
+                    updateCmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
+
+                    updateCmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    // Insert new machine and get the ID
+                    using var insertCmd = con.CreateCommand();
+                    insertCmd.CommandText = @"
+                INSERT INTO Machines (Name, Description, IP) 
+                OUTPUT INSERTED.MachineID 
+                VALUES (@Name, @Description, @IP)";
+
+                    insertCmd.Parameters.Add(new SqlParameter("@Name", clientName ?? (object)DBNull.Value));
+                    insertCmd.Parameters.Add(new SqlParameter("@Description", description ?? (object)DBNull.Value));
+                    insertCmd.Parameters.Add(new SqlParameter("@IP", assignedIp ?? (object)DBNull.Value));
+
+                    machineId = Convert.ToInt32(insertCmd.ExecuteScalar());
+                }
+            }
+
+            // Step 2: Link machine to company
+            using (var linkCmd = con.CreateCommand())
+            {
+                linkCmd.CommandText = @"
+            MERGE INTO Companies_Machines AS Target
+            USING (VALUES (@CompanyID, @MachineID)) AS Source (CompanyID, MachineID)
+            ON Target.CompanyID = Source.CompanyID AND Target.MachineID = Source.MachineID
+            WHEN NOT MATCHED THEN
+                INSERT (CompanyID, MachineID)
+                VALUES (Source.CompanyID, Source.MachineID);";
+
+                linkCmd.Parameters.Add(new SqlParameter("@CompanyID", companyId));
+                linkCmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
+                linkCmd.ExecuteNonQuery();
+            }
+
+            // Step 3: Add DashboardPages
+            foreach (var url in uibuilderUrls ?? Enumerable.Empty<string>())
+            {
+                using var pageCmd = con.CreateCommand();
+                pageCmd.CommandText = @"
+            MERGE INTO DashboardPages AS Target
+            USING (VALUES (@MachineID, @PageName, @PageURL)) AS Source (MachineID, PageName, PageURL)
+            ON Target.MachineID = Source.MachineID AND Target.PageName = Source.PageName AND Target.PageURL = Source.PageURL
+            WHEN NOT MATCHED THEN
+                INSERT (MachineID, PageName, PageURL)
+                VALUES (Source.MachineID, Source.PageName, Source.PageURL);";
+
+                pageCmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
+                pageCmd.Parameters.Add(new SqlParameter("@PageName", url ?? (object)DBNull.Value));
+                pageCmd.Parameters.Add(new SqlParameter("@PageURL", $"https://{clientName}.mde-portal.site:444/{url}"));
+
+                pageCmd.ExecuteNonQuery();
+            }
         }
 
-        private void AddParam(IDataParameterCollection parameters, string name, object value)
-        {
-            var param = new SqlParameter(name, value ?? DBNull.Value);
-            parameters.Add(param);
-        }
     }
 
 }

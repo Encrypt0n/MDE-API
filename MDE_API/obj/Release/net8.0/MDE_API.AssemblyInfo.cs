@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93cdfd559667e400e6353a4618a806bb2fd0e138")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cdd17f87e14fb7be14c9e1d3bac2eabdafc484e")]
 [assembly: System.Reflection.AssemblyProductAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,13 +1,8 @@
 ﻿using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MDE_API.Infrastructure.Repositories
 {
@@ -20,7 +15,7 @@ namespace MDE_API.Infrastructure.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public ObservableCollection<Machine> GetMachinesForUser(int userId)
+        public ObservableCollection<Machine> GetMachinesForCompany(int companyId)
         {
             var machines = new ObservableCollection<Machine>();
 
@@ -28,8 +23,16 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT MachineID, Name, Description, IP FROM Machines WHERE UserID = @UserID";
-            AddParam(cmd.Parameters, "@UserID", userId);
+            cmd.CommandText = @"
+                SELECT m.MachineID, m.Name, m.Description, m.IP, m.DashboardUrl
+                FROM Machines m
+                INNER JOIN Companies_Machines cm ON m.MachineID = cm.MachineID
+                WHERE cm.CompanyID = @CompanyID";
+
+            var paramCompanyId = cmd.CreateParameter();
+            paramCompanyId.ParameterName = "@CompanyID";
+            paramCompanyId.Value = companyId;
+            cmd.Parameters.Add(paramCompanyId);
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -39,7 +42,8 @@ namespace MDE_API.Infrastructure.Repositories
                     MachineID = reader.GetInt32(0),
                     Name = reader.GetString(1),
                     Description = reader.GetString(2),
-                    IP = reader.GetString(3)
+                    IP = reader.GetString(3),
+                    DashboardUrl = reader.GetString(4)
                 });
             }
 
@@ -52,8 +56,12 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT * FROM Machines WHERE MachineID = @MachineID";
-            AddParam(cmd.Parameters, "@MachineID", machineId);
+            cmd.CommandText = "SELECT MachineID, Name, Description, IP, DashboardUrl FROM Machines WHERE MachineID = @MachineID";
+
+            var paramMachineId = cmd.CreateParameter();
+            paramMachineId.ParameterName = "@MachineID";
+            paramMachineId.Value = machineId;
+            cmd.Parameters.Add(paramMachineId);
 
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -63,17 +71,33 @@ namespace MDE_API.Infrastructure.Repositories
                     MachineID = reader.GetInt32(0),
                     Name = reader.GetString(1),
                     Description = reader.GetString(2),
-                    IP = reader.GetString(4)  // Assuming index 4 is IP
+                    IP = reader.GetString(3),
+                    DashboardUrl = reader.IsDBNull(4) ? null : reader.GetString(4)
                 };
             }
 
             return null;
         }
-        private void AddParam(IDataParameterCollection parameters, string name, object value)
+
+        public void UpdateDashboardUrl(int machineId, string dashboardUrl)
         {
-            var param = new SqlParameter(name, value ?? DBNull.Value);
-            parameters.Add(param);
+            using var con = _connectionFactory.CreateConnection();
+            con.Open();
+
+            using var cmd = con.CreateCommand();
+            cmd.CommandText = "UPDATE Machines SET DashboardUrl = @DashboardUrl WHERE MachineID = @MachineID";
+
+            var paramDashboardUrl = cmd.CreateParameter();
+            paramDashboardUrl.ParameterName = "@DashboardUrl";
+            paramDashboardUrl.Value = dashboardUrl ?? (object)DBNull.Value;
+            cmd.Parameters.Add(paramDashboardUrl);
+
+            var paramMachineId = cmd.CreateParameter();
+            paramMachineId.ParameterName = "@MachineID";
+            paramMachineId.Value = machineId;
+            cmd.Parameters.Add(paramMachineId);
+
+            cmd.ExecuteNonQuery();
         }
     }
-
 }

@@ -11,7 +11,7 @@ namespace MDE_API.Application.Interfaces
     public interface IJWTService
     {
         
-        string GenerateToken(int userid);
+        string GenerateToken(int userid, int role, int companyId);
 
 
     }

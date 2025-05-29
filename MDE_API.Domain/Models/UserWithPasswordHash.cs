@@ -10,6 +10,10 @@ namespace MDE_API.Domain.Models
     {
         public int UserID { get; set; }
         public string PasswordHash { get; set; }
+
+        public int Role { get; set; }
+
+        public int CompanyID { get; set; }
     }
 
 }

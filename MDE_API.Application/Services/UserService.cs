@@ -19,13 +19,13 @@ namespace MDE_API.Application.Services
             _userRepository = userRepository;
         }
 
-        public bool RegisterUser(string username, string password)
+        public bool RegisterUser(string username, string password, int companyId)
         {
             if (_userRepository.UserExists(username))
                 return false;
 
             string hash = BCrypt.Net.BCrypt.HashPassword(password);
-            _userRepository.CreateUser(username, hash);
+            _userRepository.CreateUser(username, hash, companyId);
             return true;
         }
 
@@ -39,13 +39,25 @@ namespace MDE_API.Application.Services
                 return new User
                 {
                     UserID = userData.UserID,
-                    Username = username
+                    Role = userData.Role,
+                    Username = username,
+                    CompanyID = userData.CompanyID
                 };
             }
 
             return null;
         }
-        
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _userRepository.GetByIdAsync(id);
+        }
+
     }
 
 }

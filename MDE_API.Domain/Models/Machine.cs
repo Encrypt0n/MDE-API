@@ -8,6 +8,8 @@
 
         public string IP { get; set; }
 
+        public string DashboardUrl { get; set; }
+
         public override string ToString()
         {
             return Name;

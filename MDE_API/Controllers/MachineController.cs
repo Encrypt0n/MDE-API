@@ -1,5 +1,6 @@
 ﻿using MDE_API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace MDE_API.Controllers
 {
@@ -18,17 +19,38 @@ namespace MDE_API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("user/{userId}")]
-        public IActionResult GetMachinesForUser(int userId)
+        [HttpGet("company/{companyId}")]
+        public IActionResult GetMachinesForUser(int companyId)
         {
-            if (userId <= 0)
+            if (companyId <= 0)
             {
                 return BadRequest("Invalid user ID.");
             }
 
-            var machines = _machineService.GetMachinesForUser(userId);
+            var machines = _machineService.GetMachinesForCompany(companyId);
+            foreach (var machine in machines)
+            {
+
+                _logger.LogInformation("👤 Name: {Name}", machine.Name);
+            }
             return Ok(machines);
         }
+
+        [HttpPost("{machineId}/dashboard-url")]
+        public IActionResult UpdateDashboardUrl(int machineId, [FromBody] DashboardUrlUpdateModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.DashboardUrl))
+                return BadRequest("Dashboard URL is required.");
+
+            _machineService.UpdateDashboardUrl(machineId, model.DashboardUrl);
+            return Ok("Dashboard URL updated successfully.");
+        }
+
+        public class DashboardUrlUpdateModel
+        {
+            public string DashboardUrl { get; set; }
+        }
+
 
         [HttpGet("{machineId}")]
         public IActionResult GetMachineById(int machineId)
