@@ -91,14 +91,15 @@ namespace MDE_API.Tests
             var companyName = "company1";
             var subnet = "10.0.0.0/24";
             var certName = $"{companyName}_machines_{clientName}";
-            var expectedClientFolder = @"C:\fake-client-folder";
+            var expectedClientFolder = @"C:\fake-machine"; // for machine test
             var dummyBytes = new byte[] { 0x01, 0x02, 0x03 };
             var opensslPath = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe";
             var caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
 
             string ignoredError = null!;
             mockHelper.Setup(h => h.GenerateClientCert(certName, out expectedClientFolder, out ignoredError))
-                      .Returns(true);
+          .Returns(true);
+
 
             mockHelper.Setup(h => h.EncryptToBase64("fake-base64", opensslPath, caKeyPath));
 
@@ -126,6 +127,7 @@ namespace MDE_API.Tests
             Assert.NotNull(fileResult.FileContents);
             Assert.True(fileResult.FileContents.Length > 0);
         }
+
 
 
 
