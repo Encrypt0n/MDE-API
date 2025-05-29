@@ -26,11 +26,11 @@ jobs:
 
     - name: Test with coverage
       run: |
-        mkdir -p coverage
-        dotnet test --no-build --verbosity normal \
-            --collect:"XPlat Code Coverage" \
-            -p:CoverletOutputFormat=opencover \
-            -p:CoverletOutput=./TestResults/coverage/
+        coverlet ./MDE_API.Tests/bin/Debug/net8.0/MDE_API.Tests.dll \
+        --target "dotnet" \
+        --targetargs "test --no-build --no-restore" \
+        --format opencover \
+        --output ./TestResults/coverage.opencover.xml
     
     - name: List coverage output
       run: ls -la coverage/
