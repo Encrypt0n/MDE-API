@@ -1,7 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: .NET with SonarCloud
 
 on:
   push:
@@ -11,18 +8,37 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+
+    - name: Test with coverage
+      run: |
+        mkdir -p coverage
+        dotnet test --no-build --verbosity normal \
+            --collect:"XPlat Code Coverage" \
+            -p:CoverletOutputFormat=opencover \
+            -p:CoverletOutput=./TestResults/coverage/
+    
+    - name: List coverage output
+      run: ls -la coverage/
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v5.0.0
+      with:
+        args: >
+          -Dsonar.cs.opencover.reportsPaths=coverage/coverage.opencover.xml
+      env:
+        SONAR_TOKEN: 43481cfa073dc3c47dfbba6d8cb7de73495730ad
