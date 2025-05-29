@@ -30,7 +30,7 @@ jobs:
           dotnet sonarscanner begin
           /k:"Encrypt0n_MDE-API"
           /o:"encrypt0n"
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad"
           /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
 
       - name: Restore dependencies
