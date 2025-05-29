@@ -32,7 +32,9 @@ jobs:
             /k:"Encrypt0n_MDE-API" \
             /o:"encrypt0n" \
             /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad" \
+            /d:sonar.projectBaseDir="$(pwd)" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
 
       - name: Build
         run: dotnet build --no-incremental
