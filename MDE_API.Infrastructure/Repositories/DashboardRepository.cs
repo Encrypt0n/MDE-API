@@ -25,11 +25,7 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = @"
-                SELECT PageID, PageName, PageURL
-                FROM DashboardPages
-                WHERE MachineID = @MachineID
-                ORDER BY PageID ASC";
+            cmd.CommandText = @"SELECT PageID, PageName, PageURL FROM DashboardPages WHERE MachineID = @MachineID ORDER BY PageID ASC";
 
             cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
 
@@ -81,11 +77,7 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = @"
-                SELECT TOP 1 PageURL
-                FROM DashboardPages
-                WHERE MachineID = @MachineID
-                ORDER BY PageID ASC";
+            cmd.CommandText = @"SELECT TOP 1 PageURL FROM DashboardPages WHERE MachineID = @MachineID ORDER BY PageID ASC";
 
             cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
 

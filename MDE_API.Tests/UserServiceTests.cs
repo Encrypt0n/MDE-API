@@ -69,6 +69,61 @@ namespace MDE_API.Tests
             Assert.NotNull(result);
             Assert.Equal(1, result.UserID);
         }
+
+        [Fact]
+        public async Task GetAllUsersAsync_ReturnsAllUsers()
+        {
+            // Arrange
+            var users = new List<User>
+            {
+                new User { UserID = 1, Username = "user1" },
+                new User { UserID = 2, Username = "user2" }
+            };
+
+            _mockRepo.Setup(repo => repo.GetAllAsync())
+                         .ReturnsAsync(users);
+
+            // Act
+            var result = await _service.GetAllUsersAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Collection(result,
+                u => Assert.Equal("user1", u.Username),
+                u => Assert.Equal("user2", u.Username));
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_UserExists_ReturnsUser()
+        {
+            // Arrange
+            var user = new User { UserID = 1, Username = "user1" };
+
+            _mockRepo.Setup(repo => repo.GetByIdAsync(1))
+                         .ReturnsAsync(user);
+
+            // Act
+            var result = await _service.GetUserByIdAsync(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result?.UserID);
+            Assert.Equal("user1", result?.Username);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_UserDoesNotExist_ReturnsNull()
+        {
+            // Arrange
+            _mockRepo.Setup(repo => repo.GetByIdAsync(99))
+                         .ReturnsAsync((User?)null);
+
+            // Act
+            var result = await _service.GetUserByIdAsync(99);
+
+            // Assert
+            Assert.Null(result);
+        }
     }
 
 }
