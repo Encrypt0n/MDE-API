@@ -34,5 +34,5 @@ jobs:
         organization: encrypt0n               # Your SonarCloud organization key (replace)
         projectKey: Encrypt0n_MDE-API              # Your SonarCloud project key (replace)
       env:
-        SONAR_TOKEN: 7668f64639df3f6ec8b31ff17cb8144d8542f146
+        SONAR_TOKEN: 43481cfa073dc3c47dfbba6d8cb7de73495730ad
 
