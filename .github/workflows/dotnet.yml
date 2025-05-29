@@ -1,7 +1,4 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: .NET with SonarCloud
 
 on:
   push:
@@ -16,13 +13,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+
+    - name: Test with coverage
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.9.0
+      with:
+        organization: encrypt0n               # Your SonarCloud organization key (replace)
+        projectKey: Encrypt0n_MDE-API              # Your SonarCloud project key (replace)
+      env:
+        SONAR_TOKEN: 7668f64639df3f6ec8b31ff17cb8144d8542f146
+
