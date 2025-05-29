@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
+using System;
 
 namespace MDE_API.Infrastructure.Repositories
 {
@@ -21,16 +22,17 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = @"INSERT INTO UserActivityLog (UserId, MachineId, Action, Target, Timestamp, IpAddress, UserAgent)
-                                 VALUES (@UserId, @MachineId, @Action, @Target, @Timestamp, @IpAddress, @UserAgent)";
+            cmd.CommandText = @"
+                INSERT INTO UserActivityLog (UserId, MachineId, Action, Target, Timestamp, IpAddress, UserAgent)
+                VALUES (@UserId, @MachineId, @Action, @Target, @Timestamp, @IpAddress, @UserAgent)";
 
-            AddParam(cmd.Parameters, "@UserId", activity.UserId);
-            AddParam(cmd.Parameters, "@MachineId", activity.MachineId);
-            AddParam(cmd.Parameters, "@Action", activity.Action);
-            AddParam(cmd.Parameters, "@Target", activity.Target);
-            AddParam(cmd.Parameters, "@Timestamp", activity.Timestamp);
-            AddParam(cmd.Parameters, "@IpAddress", activity.IpAddress);
-            AddParam(cmd.Parameters, "@UserAgent", activity.UserAgent);
+            cmd.Parameters.Add(new SqlParameter("@UserId", activity.UserId));
+            cmd.Parameters.Add(new SqlParameter("@MachineId", activity.MachineId));
+            cmd.Parameters.Add(new SqlParameter("@Action", activity.Action));
+            cmd.Parameters.Add(new SqlParameter("@Target", (object?)activity.Target ?? DBNull.Value));
+            cmd.Parameters.Add(new SqlParameter("@Timestamp", activity.Timestamp));
+            cmd.Parameters.Add(new SqlParameter("@IpAddress", (object?)activity.IpAddress ?? DBNull.Value));
+            cmd.Parameters.Add(new SqlParameter("@UserAgent", (object?)activity.UserAgent ?? DBNull.Value));
 
             cmd.ExecuteNonQuery();
         }
@@ -44,7 +46,7 @@ namespace MDE_API.Infrastructure.Repositories
 
             using var cmd = con.CreateCommand();
             cmd.CommandText = "SELECT * FROM UserActivityLog WHERE MachineId = @MachineId ORDER BY Timestamp DESC";
-            AddParam(cmd.Parameters, "@MachineId", machineId);
+            cmd.Parameters.Add(new SqlParameter("@MachineId", machineId));
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -63,12 +65,6 @@ namespace MDE_API.Infrastructure.Repositories
             }
 
             return result;
-        }
-
-        private void AddParam(IDataParameterCollection parameters, string name, object? value)
-        {
-            var param = new SqlParameter(name, value ?? DBNull.Value);
-            parameters.Add(param);
         }
     }
 }

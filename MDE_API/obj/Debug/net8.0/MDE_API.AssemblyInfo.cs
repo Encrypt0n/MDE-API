@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83d1933a34c5578b3eefbd83b09417b6147dcd5d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d98c18031f8ef737c37060caca0a312f6c428968")]
 [assembly: System.Reflection.AssemblyProductAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MDE_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

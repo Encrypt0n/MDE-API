@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MDE_API.Infrastructure.Repositories
 {
@@ -28,8 +25,13 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT PageID, PageName, PageURL FROM DashboardPages WHERE MachineID = @MachineID ORDER BY PageID ASC";
-            AddParam(cmd.Parameters, "@MachineID", machineId);
+            cmd.CommandText = @"
+                SELECT PageID, PageName, PageURL
+                FROM DashboardPages
+                WHERE MachineID = @MachineID
+                ORDER BY PageID ASC";
+
+            cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
 
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -51,10 +53,11 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = "INSERT INTO DashboardPages (MachineID, PageName, PageURL) VALUES (@MachineID, @PageName, @PageURL)";
-            AddParam(cmd.Parameters, "@MachineID", machineId);
-            AddParam(cmd.Parameters, "@PageName", pageName);
-            AddParam(cmd.Parameters, "@PageURL", pageUrl);
+            cmd.CommandText = @"INSERT INTO DashboardPages (MachineID, PageName, PageURL) VALUES (@MachineID, @PageName, @PageURL)";
+
+            cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
+            cmd.Parameters.Add(new SqlParameter("@PageName", pageName ?? (object)DBNull.Value));
+            cmd.Parameters.Add(new SqlParameter("@PageURL", pageUrl ?? (object)DBNull.Value));
 
             cmd.ExecuteNonQuery();
         }
@@ -66,7 +69,8 @@ namespace MDE_API.Infrastructure.Repositories
 
             using var cmd = con.CreateCommand();
             cmd.CommandText = "DELETE FROM DashboardPages WHERE PageID = @PageID";
-            AddParam(cmd.Parameters, "@PageID", pageId);
+
+            cmd.Parameters.Add(new SqlParameter("@PageID", pageId));
 
             cmd.ExecuteNonQuery();
         }
@@ -77,18 +81,16 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = "SELECT TOP 1 PageURL FROM DashboardPages WHERE MachineID = @MachineID ORDER BY PageID ASC";
-            AddParam(cmd.Parameters, "@MachineID", machineId);
+            cmd.CommandText = @"
+                SELECT TOP 1 PageURL
+                FROM DashboardPages
+                WHERE MachineID = @MachineID
+                ORDER BY PageID ASC";
+
+            cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
 
             object result = cmd.ExecuteScalar();
             return result != null ? result.ToString() : string.Empty;
         }
-
-        private void AddParam(IDataParameterCollection parameters, string name, object value)
-        {
-            var param = new SqlParameter(name, value ?? DBNull.Value);
-            parameters.Add(param);
-        }
     }
-
 }

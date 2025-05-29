@@ -1,5 +1,6 @@
 ﻿using MDE_API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace MDE_API.Controllers
