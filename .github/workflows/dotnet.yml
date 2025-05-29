@@ -17,6 +17,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
+          
+      - name: Move to repo root
+        run: cd $GITHUB_WORKSPACE
 
       - name: Install SonarScanner for .NET
         run: |
@@ -32,7 +35,6 @@ jobs:
             /k:"Encrypt0n_MDE-API" \
             /o:"encrypt0n" \
             /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad" \
-            /d:sonar.projectBaseDir="$(pwd)" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
 
