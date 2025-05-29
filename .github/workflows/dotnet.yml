@@ -11,36 +11,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
 
-    - name: Build
-      run: dotnet build --no-restore
+      - name: Add .dotnet/tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-    - name: Test with coverage
-      run: |
-        dotnet tool install --global coverlet.console
-        export PATH="$PATH:$HOME/.dotnet/tools"
-        dotnet build --no-incremental
-        coverlet ./MDE_API.Tests/bin/Debug/net8.0/MDE_API.Tests.dll \
-        --target "dotnet" \
-        --targetargs "test --no-build --no-restore" \
-        --format opencover \
-        --output ./TestResults/coverage.opencover.xml
+      - name: Begin SonarCloud analysis
+        run: >
+          dotnet sonarscanner begin
+          /k:"Encrypt0n_MDE-API"
+          /o:"encrypt0n"
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v5.0.0
-      with:
-        args: >
-          -Dsonar.organization=encrypt0n
-          -Dsonar.projectKey=Encrypt0n_MDE-API
-          -Dsonar.cs.opencover.reportsPaths=TestResults/coverage.opencover.xml
-      env:
-        SONAR_TOKEN: 43481cfa073dc3c47dfbba6d8cb7de73495730ad
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-incremental
+
+      - name: Install Coverlet
+        run: dotnet tool install --global coverlet.console
+
+      - name: Run tests and collect coverage
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          coverlet ./MDE_API.Tests/bin/Debug/net8.0/MDE_API.Tests.dll \
+            --target "dotnet" \
+            --targetargs "test --no-build --no-restore" \
+            --format opencover \
+            --output TestResults/coverage.opencover.xml
+
+      - name: End SonarCloud analysis
+        run: dotnet sonarscanner end /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad "
