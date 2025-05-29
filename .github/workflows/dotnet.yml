@@ -37,7 +37,10 @@ jobs:
         run: dotnet restore
 
       - name: Build solution
-        run: dotnet build --no-incremental
+        run: |
+          dotnet build MDE_API/MDE_API.csproj --no-incremental
+          dotnet build MDE_API.Tests/MDE_API.Tests.csproj --no-incremental
+
 
       - name: Install Coverlet
         run: dotnet tool install --global coverlet.console
