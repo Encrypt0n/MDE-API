@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -20,39 +19,29 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Install SonarScanner for .NET
-        run: dotnet tool install --global dotnet-sonarscanner
-
-      - name: Add .dotnet/tools to PATH
-        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-
-      - name: Begin SonarCloud analysis
-        run: >
-          dotnet sonarscanner begin
-          /k:"Encrypt0n_MDE-API"
-          /o:"encrypt0n"
-          /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad"
-          /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build solution
+      - name: Begin SonarCloud analysis
         run: |
-          dotnet build MDE_API/MDE_API.csproj --no-incremental
-          dotnet build MDE_API.Tests/MDE_API.Tests.csproj --no-incremental
+          dotnet sonarscanner begin \
+            /k:"Encrypt0n_MDE-API" \
+            /o:"encrypt0n" \
+            /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
+      - name: Build
+        run: dotnet build --no-incremental
 
-      - name: Install Coverlet
-        run: dotnet tool install --global coverlet.console
-
-      - name: Run tests and collect coverage
+      - name: Run tests with coverage
         run: |
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          coverlet ./MDE_API.Tests/bin/Debug/net8.0/MDE_API.Tests.dll \
-            --target "dotnet" \
-            --targetargs "test --no-build --no-restore" \
-            --format opencover \
-            --output TestResults/coverage.opencover.xml
+          dotnet test --no-build --collect:"XPlat Code Coverage"
+          reportPath=$(find . -type f -name 'coverage.opencover.xml' | head -n 1)
+          echo "Coverage report located at: $reportPath"
 
       - name: End SonarCloud analysis
         run: dotnet sonarscanner end /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad"
