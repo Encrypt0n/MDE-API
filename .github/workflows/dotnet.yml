@@ -52,4 +52,4 @@ jobs:
             --output TestResults/coverage.opencover.xml
 
       - name: End SonarCloud analysis
-        run: dotnet sonarscanner end /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad "
+        run: dotnet sonarscanner end /d:sonar.token="43481cfa073dc3c47dfbba6d8cb7de73495730ad"
