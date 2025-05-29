@@ -33,6 +33,9 @@ jobs:
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
           /p:CoverletOutput=../../coverage/coverage.opencover.xml
+    
+    - name: List coverage output
+      run: ls -la coverage/
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v5.0.0
