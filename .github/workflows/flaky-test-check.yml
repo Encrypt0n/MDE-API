@@ -26,11 +26,12 @@ jobs:
 
       - name: Run tests with coverage and trx log (Run ${{ matrix.run }})
         run: >
-          dotnet test
+          dotnet test MDE_API.Tests/MDE_API.Tests.csproj
           --logger "trx;LogFileName=TestResults_${{ matrix.run }}.trx"
           /p:CollectCoverage=true
           /p:CoverletOutputFormat=cobertura
-          /p:CoverletOutput=./TestResults/Coverage_${{ matrix.run }}
+          /p:CoverletOutput=../TestResults/Coverage_${{ matrix.run }}
+          
 
       - name: Upload test results and coverage
         if: always()
