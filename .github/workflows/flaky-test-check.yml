@@ -26,7 +26,12 @@ jobs:
         run: dotnet restore
 
       - name: Run tests with coverage (Run ${{ matrix.run }})
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/Coverage_${{ matrix.run }}
+        run: >
+          dotnet test
+          --logger "trx;LogFileName=TestResults_${{ matrix.run }}.trx"
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput=./TestResults/Coverage_${{ matrix.run }}
 
 
       - name: Upload test results
