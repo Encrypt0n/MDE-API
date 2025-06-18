@@ -2,9 +2,11 @@
 using MDE_API.Application.Interfaces;
 using MDE_API.Domain;
 using MDE_API.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MDE_API.Controllers
 {
+    
     [ApiController]
     [Route("api/companies")]
     public class CompanyController : ControllerBase
@@ -30,6 +32,7 @@ namespace MDE_API.Controllers
             return company is null ? NotFound() : Ok(company);
         }
 
+        [Authorize(Policy = "Role1Only")]
         [HttpPost]
         public IActionResult Create([FromBody] Domain.Models.CompanyModel company)
         {
@@ -37,6 +40,7 @@ namespace MDE_API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = company.CompanyID }, company);
         }
 
+        [Authorize(Policy = "Role1Only")]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Domain.Models.CompanyModel company)
         {
@@ -47,6 +51,7 @@ namespace MDE_API.Controllers
             return success ? NoContent() : NotFound();
         }
 
+        [Authorize(Policy = "Role1Only")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

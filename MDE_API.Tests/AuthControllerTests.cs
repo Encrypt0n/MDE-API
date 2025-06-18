@@ -6,18 +6,22 @@ using MDE_API.Controllers;
 using MDE_API.Domain;
 using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 public class AuthControllerTests
 {
     private readonly Mock<IJWTService> _mockJwtService;
     private readonly Mock<IUserService> _mockUserService;
+    private readonly Mock<IMachineRepository> _mockMachineRepository;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
         _mockJwtService = new Mock<IJWTService>();
         _mockUserService = new Mock<IUserService>();
-        _controller = new AuthController(_mockJwtService.Object, _mockUserService.Object);
+        _mockMachineRepository = new Mock<IMachineRepository>();
+        _controller = new AuthController(_mockJwtService.Object, _mockUserService.Object, _mockMachineRepository.Object);
     }
 
     [Fact]
@@ -53,6 +57,8 @@ public class AuthControllerTests
 
         _mockUserService.Setup(s => s.ValidateUser(model.Username, model.Password))
                         .Returns((User)null);
+
+        
 
         // Act
         var result = _controller.Login(model);
@@ -94,5 +100,151 @@ public class AuthControllerTests
         // Assert
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Username already exists.", badRequest.Value);
+    }
+
+
+
+    [Fact]
+    public void Validate_NoAuthorizationHeader_ReturnsUnauthorized()
+    {
+        var httpContext = new DefaultHttpContext();
+       // httpContext.Request.Headers["Authorization"] = null;
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+        // No Authorization header set
+        var result = _controller.Validate(1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void Validate_AuthorizationHeaderWithoutBearer_ReturnsUnauthorized()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Basic abcdefg";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+        
+
+        var result = _controller.Validate(1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void Validate_InvalidToken_ReturnsUnauthorized()
+    {
+        
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer invalidtoken";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+
+        _mockJwtService.Setup(j => j.ValidateToken("invalidtoken")).Returns((ClaimsPrincipal?)null);
+
+        var result = _controller.Validate(1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void Validate_TokenWithoutNbfClaim_ReturnsUnauthorized()
+    {
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "jwt"));
+        
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer validtoken";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+
+        _mockJwtService.Setup(j => j.ValidateToken("validtoken")).Returns(claimsPrincipal);
+
+        var result = _controller.Validate(1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void Validate_TokenWithInvalidNbfClaim_ReturnsUnauthorized()
+    {
+        var claims = new List<Claim> { new Claim("nbf", "notAnInt") };
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt"));
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer validtoken";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+        
+
+        _mockJwtService.Setup(j => j.ValidateToken("validtoken")).Returns(claimsPrincipal);
+
+        var result = _controller.Validate(1);
+
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void Validate_CompanyDoesNotHaveMachine_ReturnsForbid()
+    {
+        var claims = new List<Claim> { new Claim("nbf", "123") };
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt"));
+        
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer validtoken";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+
+        _mockJwtService.Setup(j => j.ValidateToken("validtoken")).Returns(claimsPrincipal);
+        _mockMachineRepository.Setup(m => m.GetMachinesForCompany(123)).Returns(new System.Collections.ObjectModel.ObservableCollection<Machine> { new Machine { MachineID = 999 } });
+
+        var result = _controller.Validate(1);
+
+        Assert.IsType<ForbidResult>(result);
+    }
+
+    [Fact]
+    public void Validate_CompanyHasMachine_Returns418StatusCode()
+    {
+        var claims = new List<Claim> { new Claim("nbf", "123") };
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "jwt"));
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer validtoken";
+
+        // Assign HttpContext to the controller
+        _controller.ControllerContext = new ControllerContext()
+        {
+            HttpContext = httpContext
+        };
+
+        _mockJwtService.Setup(j => j.ValidateToken("validtoken")).Returns(claimsPrincipal);
+        _mockMachineRepository.Setup(m => m.GetMachinesForCompany(123)).Returns(new System.Collections.ObjectModel.ObservableCollection<Machine> { new Machine { MachineID = 1 } });
+
+        var result = _controller.Validate(1);
+
+        var statusResult = Assert.IsType<StatusCodeResult>(result);
+        Assert.Equal(418, statusResult.StatusCode);
     }
 }

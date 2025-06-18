@@ -10,6 +10,10 @@ using MDE_API.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Connections;
 using MDE_API.Infrastructure.Factories;
 using MDE_API.Application.Interfaces.MDE_API.Services;
+using MDE_API.Infrastructure;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +23,35 @@ var privateKeyPath = builder.Configuration["Jwt:PrivateKeyPath"];
 var rsa = RSA.Create();
 rsa.ImportFromPem(File.ReadAllText(privateKeyPath));
 var privateKey = new RsaSecurityKey(rsa);
+var publicKeyPath = builder.Configuration["Jwt:PublicKeyPath"];
+var rsa2 = RSA.Create();
+rsa2.ImportFromPem(File.ReadAllText(publicKeyPath));
+var publicKey = new RsaSecurityKey(rsa2);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = publicKey
+        };
+    });
+
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Role1Only", policy =>
+        policy.RequireClaim("typ", "1")); // or ClaimTypes.Role, depending on your JWT
+    options.AddPolicy("Role1and2Only", policy =>
+        policy.RequireClaim("typ", "1", "2")); // or ClaimTypes.Role, depending on your JWT
+});
 
 
 builder.Services.AddSingleton<IUserService, UserService>();
@@ -37,10 +70,20 @@ builder.Services.AddSingleton<IMachineRepository, MachineRepository>();
 builder.Services.AddSingleton<IDashboardRepository, DashboardRepository>();
 builder.Services.AddSingleton<IVPNRepository, VPNRepository>(); // If you also create IVPNService
 
+builder.Services.AddSingleton<IOpenSslHelper,OpenSslHelper>();
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
+
+builder.Services.AddHttpClient(); // for CloudflareDnsUpdater
+builder.Services.AddSingleton<IVPNClientConnectedObserver, CloudflareDnsUpdater>();
+builder.Services.AddSingleton<IVPNClientConnectedObserver, NginxConfigWriter>();
+builder.Services.AddSingleton<VPNClientNotifier>();
+
+
 
 // Create and register the JWTService instance
 var jwtService = new JWTService(
     privateKey,
+    publicKey,
     builder.Configuration["Jwt:Issuer"],
     builder.Configuration["Jwt:Audience"]
 );
@@ -50,7 +93,7 @@ builder.Services.AddSingleton<IJWTService>(jwtService); // <-- this line is the 
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -64,7 +107,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // IMPORTANT: Set only the public key for validation on actual client
             // For the server, this is not required unless you want to validate incoming JWTs from other parties
         };
-    });
+    });*/
 
 
 

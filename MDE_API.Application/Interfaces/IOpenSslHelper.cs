@@ -12,7 +12,7 @@ namespace MDE_API.Application.Interfaces
         string EncryptToBase64(string input, string openssl, string keyPath);
         bool RunOpenSSL(string opensslPath, string arguments, out string error);
 
-
+       
     }
 
     public interface IFileSystem
@@ -23,11 +23,9 @@ namespace MDE_API.Application.Interfaces
         bool FileExists(string path);
         void DeleteFile(string path);
         string GetTempFileName();
+
     }
 
-    public interface IProcessRunner
-    {
-        bool RunOpenSsl(string opensslPath, string arguments, out string error);
-    }
+    
 
 }

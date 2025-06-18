@@ -1,0 +1,10 @@
+{
+  "stryker-config": {
+    "mutate": [
+      "**/*.cs",
+      "!**/MDE_API.Application/Services/OpenSslHelper.cs",
+      "!**/MDE_API.Application/Services/VPNClientNotifier.cs",
+      "!**/MDE_API/Program.cs"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MDE_API.Domain.Models;
 using MDE_API.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MDE_API.Controllers
 {
@@ -16,6 +17,7 @@ namespace MDE_API.Controllers
         }
 
         // ✅ GET: api/users
+        [Authorize(Policy = "Role1and2Only")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {

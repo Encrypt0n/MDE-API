@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MDE_API.Application.Interfaces;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace MDE_API.Application.Services
 {
@@ -20,9 +22,56 @@ namespace MDE_API.Application.Services
                 _vpnRepository = vpnRepository;
             }
 
-            public void SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
+        public async Task AddCloudflareDnsRecordAsync(string baseName)
+        {
+            string apiToken = "baa728e93aa7b8d9266ca9cdf9fba78cf3d31";
+            string zoneId = "8eb734374b1ef138b41104b31620f7ea"; // From Cloudflare dashboard
+
+            var domains = new[]
             {
-                _vpnRepository.SaveClientConnection(clientName, description, companyId, assignedIp, uibuilderUrls);
+                   $"{baseName}.mde-portal.site",
+                   $"{baseName}-camera.mde-portal.site",
+                   $"{baseName}-vnc.mde-portal.site"
+            };
+
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiToken);
+
+            foreach (var domain in domains)
+            {
+                var payload = new
+                {
+                    type = "A",
+                    name = domain,
+                    content = "217.63.76.110",
+                    ttl = 120,
+                    proxied = true
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(
+                    $"https://api.cloudflare.com/client/v4/zones/{zoneId}/dns_records",
+                    content);
+
+                var result = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                   // _logger.LogInformation("✅ Created DNS record for {Domain}", domain);
+                }
+                else
+                {
+                    //_logger.LogError("❌ Failed to create DNS for {Domain}: {Response}", domain, result);
+                }
+            }
+        }
+
+
+        public int SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
+            {
+                return _vpnRepository.SaveClientConnection(clientName, description, companyId, assignedIp, uibuilderUrls);
             }
         }
 

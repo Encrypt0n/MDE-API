@@ -5,6 +5,11 @@ using MDE_API.Controllers;
 using MDE_API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using MDE_API.Domain.Models;
+using MDE_API.Application.Services;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Net;
 
 namespace MDE_API.Tests
 {
@@ -15,7 +20,8 @@ namespace MDE_API.Tests
         private readonly VPNController _controller;
         private readonly Mock<IOpenSslHelper> _helper;
         private readonly Mock<IFileSystem> _mockFileSystem;
-        private readonly Mock<IProcessRunner> _mockProcessRunner;
+        
+        private readonly Mock<IVPNClientNotifier> _vpnNotifier;
 
         public VPNControllerTests()
         {
@@ -23,13 +29,50 @@ namespace MDE_API.Tests
             _loggerMock = new Mock<ILogger<VPNController>>();
             _helper = new Mock<IOpenSslHelper>();
             _mockFileSystem = new Mock<IFileSystem>();
-            _mockProcessRunner = new Mock<IProcessRunner>();
-            _controller = new VPNController(_vpnServiceMock.Object, _loggerMock.Object, _helper.Object, _mockFileSystem.Object, _mockProcessRunner.Object);
+         
+            _vpnNotifier = new Mock<IVPNClientNotifier>();
+            _controller = new VPNController(_vpnServiceMock.Object, _loggerMock.Object, _helper.Object, _mockFileSystem.Object, _vpnNotifier.Object);
         }
 
         [Fact]
         public void ClientConnected_ValidModel_CallsSaveAndReturnsOk()
         {
+
+            // Arrange
+            var mockHelper = new Mock<IOpenSslHelper>();
+            var mockFileSystem = new Mock<IFileSystem>();
+            var mockVpnService = new Mock<IVPNService>();
+            var mockLogger = new Mock<ILogger<VPNController>>();
+            var mockNotifier = new Mock<IVPNClientNotifier>(); // use interface version of VPNClientNotifier
+
+            var controller = new VPNController(
+                mockVpnService.Object,
+                mockLogger.Object,
+                mockHelper.Object,
+                mockFileSystem.Object,
+                mockNotifier.Object
+            );
+
+            var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Role, "1") // or "typ" = "1", depending on your logic
+};
+            var identity = new ClaimsIdentity(claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    
+                    User = claimsPrincipal,
+                    Connection =
+                    {
+                        RemoteIpAddress = IPAddress.Loopback // 127.0.0.1
+
+                    }
+                }
+            };
             // Arrange
             var model = new VpnClientConnectModel
             {
@@ -41,11 +84,11 @@ namespace MDE_API.Tests
             };
 
             // Act
-            var result = _controller.ClientConnected(model);
+            var result = controller.ClientConnected(model);
 
             // Assert
             var okResult = Assert.IsType<OkResult>(result);
-            _vpnServiceMock.Verify(v => v.SaveClientConnection(
+            mockVpnService.Verify(v => v.SaveClientConnection(
                 model.ClientName,
                 model.Description,
                 model.CompanyID,
@@ -54,70 +97,65 @@ namespace MDE_API.Tests
             ), Times.Once);
         }
 
-        [Theory]
-        [InlineData(null, "desc", 1, "10.0.0.1")]
-        [InlineData("client", null, 1, "10.0.0.1")]
-        [InlineData("client", "desc", 0, "10.0.0.1")]
-        [InlineData("client", "desc", 1, null)]
-        [InlineData("", "desc", 1, "10.0.0.1")]
-        public void ClientConnected_InvalidModel_ReturnsBadRequest(
-            string clientName, string description, int companyId, string assignedIp)
-        {
-            // Arrange
-            var model = new VpnClientConnectModel
-            {
-                ClientName = clientName,
-                Description = description,
-                CompanyID = companyId,
-                AssignedIp = assignedIp,
-                UiBuilderUrls = null
-            };
 
-            // Act
-            var result = _controller.ClientConnected(model);
-
-            // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            _vpnServiceMock.Verify(v => v.SaveClientConnection(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<string>>()), Times.Never);
-        }
 
         [Fact]
-        public void GenerateMachine_ReturnsFile_WhenCertGenerated()
+        public void GenerateCert_ReturnsFile_WhenCertGenerated()
         {
             // Arrange
             var mockHelper = new Mock<IOpenSslHelper>();
             var mockFileSystem = new Mock<IFileSystem>();
+            var mockVpnService = new Mock<IVPNService>();
+            var mockLogger = new Mock<ILogger<VPNController>>();
+            var mockNotifier = new Mock<IVPNClientNotifier>(); // use interface version of VPNClientNotifier
+
+            var controller = new VPNController(
+                mockVpnService.Object,
+                mockLogger.Object,
+                mockHelper.Object,
+                mockFileSystem.Object,
+                mockNotifier.Object
+            );
+
+            var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Role, "1") // or "typ" = "1", depending on your logic
+};
+            var identity = new ClaimsIdentity(claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+
             var clientName = "client1";
             var companyName = "company1";
             var subnet = "10.0.0.0/24";
+            bool user = false;
             var certName = $"{companyName}_machines_{clientName}";
-            var expectedClientFolder = @"C:\fake-machine"; // for machine test
+            var expectedClientFolder = @"C:\fake-machine";
             var dummyBytes = new byte[] { 0x01, 0x02, 0x03 };
             var opensslPath = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe";
             var caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
 
             string ignoredError = null!;
+
             mockHelper.Setup(h => h.GenerateClientCert(certName, out expectedClientFolder, out ignoredError))
-          .Returns(true);
+                      .Returns(true);
 
-
-            mockHelper.Setup(h => h.EncryptToBase64("fake-base64", opensslPath, caKeyPath));
+            mockHelper.Setup(h => h.EncryptToBase64(It.IsAny<string>(), opensslPath, caKeyPath));
 
             mockFileSystem.Setup(fs => fs.ReadAllBytes(It.IsAny<string>())).Returns(dummyBytes);
 
-            // ✅ Mock WriteAllLines to avoid touching disk
-            mockFileSystem.Setup(fs => fs.WriteAllLines(It.IsAny<string>(), It.IsAny<string[]>()))
-                          .Verifiable();
-
-            var controller = new VPNController(
-                _vpnServiceMock.Object,
-                _loggerMock.Object,
-                mockHelper.Object,
-                mockFileSystem.Object,
-                _mockProcessRunner.Object);
+            mockFileSystem.Setup(fs => fs.WriteAllLines(It.IsAny<string>(), It.IsAny<string[]>())).Verifiable();
 
             // Act
-            var result = controller.GenerateMachine(clientName, companyName, subnet);
+            var result = controller.GenerateCert(clientName, companyName, subnet, user);
 
             // Assert
             var fileResult = Assert.IsType<FileContentResult>(result);

@@ -1,4 +1,5 @@
 ﻿using MDE_API.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -37,6 +38,7 @@ namespace MDE_API.Controllers
             return Ok(machines);
         }
 
+        [Authorize(Policy = "Role1and2Only")]
         [HttpPost("{machineId}/dashboard-url")]
         public IActionResult UpdateDashboardUrl(int machineId, [FromBody] DashboardUrlUpdateModel model)
         {

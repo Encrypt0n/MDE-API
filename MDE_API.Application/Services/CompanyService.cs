@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MDE_API.Application.Interfaces;
 using MDE_API.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace MDE_API.Application.Services
 {
@@ -13,10 +15,12 @@ namespace MDE_API.Application.Services
     public class CompanyService : ICompanyService
     {
         private readonly ICompanyRepository _companyRepository;
+        private readonly ILogger<CompanyService> _logger;
 
-        public CompanyService(ICompanyRepository companyRepository)
+        public CompanyService(ICompanyRepository companyRepository, ILogger<CompanyService> logger)
         {
             _companyRepository = companyRepository;
+            _logger = logger;
         }
 
         public List<Company> GetAllCompanies() => _companyRepository.GetAllCompanies();
@@ -25,11 +29,16 @@ namespace MDE_API.Application.Services
 
         public void CreateCompany(CompanyModel companyModel)
         {
+            _logger.LogInformation("🔥 Logger is working inside CompanyService.");
+
+            string _apiToken = "6WYx0f-LkSgujUSxbn0EUbXSSd8DI0B75ptvsxwI";
+            string _zoneId = "8eb734374b1ef138b41104b31620f7ea";
             var usedSubnets = _companyRepository.GetAllCompanies()
-                .Select(c => c.Subnet)
-                .ToHashSet();
+                    .Select(c => c.Subnet)
+                    .ToHashSet();
 
             string? assignedSubnet = null;
+            int chosenSubnetNumber = -1;
 
             for (int i = 10; i <= 200; i++)
             {
@@ -37,6 +46,7 @@ namespace MDE_API.Application.Services
                 if (!usedSubnets.Contains(candidateSubnet))
                 {
                     assignedSubnet = candidateSubnet;
+                    chosenSubnetNumber = i;
                     break;
                 }
             }
@@ -52,7 +62,11 @@ namespace MDE_API.Application.Services
             };
 
             _companyRepository.CreateCompany(company);
+
         }
+
+
+
 
 
 

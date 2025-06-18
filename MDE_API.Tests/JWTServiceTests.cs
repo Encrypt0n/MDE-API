@@ -6,20 +6,25 @@ using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 using MDE_API.Application.Interfaces; // For IJWTService
-using MDE_API.Application.Services; // If JWTService is here
+using MDE_API.Application.Services;
+using Castle.Core.Configuration; // If JWTService is here
 
 public class JWTServiceTests
 {
     private readonly RsaSecurityKey _rsaKey;
+    private readonly RsaSecurityKey _rsaKey2;
     private readonly JWTService _jwtService;
     private readonly string _issuer = "test-issuer";
     private readonly string _audience = "test-audience";
+   
 
     public JWTServiceTests()
     {
         using var rsa = RSA.Create(2048);
         _rsaKey = new RsaSecurityKey(rsa.ExportParameters(true));
-        _jwtService = new JWTService(_rsaKey, _issuer, _audience);
+        using var rsa2 = RSA.Create(2048);
+        _rsaKey2 = new RsaSecurityKey(rsa.ExportParameters(true));
+        _jwtService = new JWTService(_rsaKey, _rsaKey2, _issuer, _audience);
     }
 
     [Fact]
@@ -54,8 +59,10 @@ public class JWTServiceTests
         var jwt = (JwtSecurityToken)validatedToken;
 
         Assert.Equal(userId.ToString(), jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value);
-        Assert.Equal(role.ToString(), jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Typ).Value);
-        Assert.Equal(companyId.ToString(), jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Nbf).Value);
+        Assert.Equal(role.ToString(), jwt.Claims.First(c => c.Type == "role").Value);
+        Assert.Equal(companyId.ToString(), jwt.Claims.First(c => c.Type == "companyId").Value);
         Assert.NotNull(jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti));
     }
+
+
 }

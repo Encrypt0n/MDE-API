@@ -24,10 +24,10 @@ namespace MDE_API.Infrastructure.Repositories
 
             using var cmd = con.CreateCommand();
             cmd.CommandText = @"
-                SELECT m.MachineID, m.Name, m.Description, m.IP, m.DashboardUrl
-                FROM Machines m
-                INNER JOIN Companies_Machines cm ON m.MachineID = cm.MachineID
-                WHERE cm.CompanyID = @CompanyID";
+        SELECT m.MachineID, m.Name, m.Description, m.IP, m.DashboardUrl
+        FROM Machines m
+        INNER JOIN Companies_Machines cm ON m.MachineID = cm.MachineID
+        WHERE cm.CompanyID = @CompanyID";
 
             var paramCompanyId = cmd.CreateParameter();
             paramCompanyId.ParameterName = "@CompanyID";
@@ -43,12 +43,13 @@ namespace MDE_API.Infrastructure.Repositories
                     Name = reader.GetString(1),
                     Description = reader.GetString(2),
                     IP = reader.GetString(3),
-                    DashboardUrl = reader.GetString(4)
+                    DashboardUrl = reader.IsDBNull(4) ? null : reader.GetString(4)
                 });
             }
 
             return machines;
         }
+
 
         public Machine GetMachineById(int machineId)
         {

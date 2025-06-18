@@ -1,9 +1,11 @@
 ﻿using MDE_API.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace MDE_API.Controllers
 {
+    
     [ApiController]
     [Route("api/dashboard")]
     public class DashboardController : ControllerBase
@@ -34,6 +36,7 @@ namespace MDE_API.Controllers
             public string PageUrl { get; set; }
         }
 
+        [Authorize(Policy = "Role1and2Only")]
         [HttpPost]
         public IActionResult AddDashboardPage([FromBody] AddDashboardPageModel model)
         {
@@ -46,6 +49,7 @@ namespace MDE_API.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "Role1and2Only")]
         [HttpDelete("{pageId}")]
         public IActionResult DeleteDashboardPage(int pageId)
         {

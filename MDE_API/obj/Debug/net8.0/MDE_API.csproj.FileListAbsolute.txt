@@ -184,8 +184,6 @@ D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MD
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Configuration.KeyPerFile.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Configuration.UserSecrets.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Configuration.Xml.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.DependencyInjection.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Diagnostics.Abstractions.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Diagnostics.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions.dll
@@ -203,18 +201,15 @@ D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MD
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Identity.Stores.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Localization.Abstractions.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Localization.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.Abstractions.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.Configuration.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.Console.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.Debug.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.EventLog.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.EventSource.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Logging.TraceSource.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.ObjectPool.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Options.ConfigurationExtensions.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Options.DataAnnotations.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.Options.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Extensions.WebEncoders.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.JSInterop.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\Microsoft.Net.Http.Headers.dll
@@ -245,7 +240,6 @@ D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MD
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Data.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.Contracts.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.Debug.dll
-D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.DiagnosticSource.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.EventLog.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.FileVersionInfo.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\refs\System.Diagnostics.Process.dll
@@ -393,7 +387,9 @@ D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MD
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Caching.Memory.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Abstractions.dll
+D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
@@ -412,6 +408,7 @@ D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MD
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.ClientModel.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.Configuration.ConfigurationManager.dll
+D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.Diagnostics.EventLog.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 D:\School\OneDrive - Avans Hogeschool\Avans\Leerjaar4\Stage\Projecten\MDE-API\MDE_API\bin\Debug\net8.0\System.Memory.Data.dll

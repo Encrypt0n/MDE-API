@@ -18,7 +18,7 @@ namespace MDE_API.Infrastructure.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public void SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
+        public int SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls)
         {
             using var con = _connectionFactory.CreateConnection();
             con.Open();
@@ -100,8 +100,9 @@ namespace MDE_API.Infrastructure.Repositories
 
                 pageCmd.ExecuteNonQuery();
             }
-        }
 
+            return machineId;
+        }
     }
 
-}
+    }

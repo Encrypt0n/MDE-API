@@ -8,6 +8,7 @@ namespace MDE_API.Application.Interfaces
 {
     public interface IVPNService
     {
-        void SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls);
+        int SaveClientConnection(string clientName, string description, int companyId, string assignedIp, List<string> uibuilderUrls);
+        Task AddCloudflareDnsRecordAsync(string baseName);
     }
 }

@@ -12,17 +12,11 @@ namespace MDE_API.Application.Services
 
     public class OpenSslHelper: IOpenSslHelper
     {
-        private readonly string _opensslPath;
-        private readonly string _caCertPath;
-        private readonly string _caKeyPath;
-        private readonly string _certsRootFolder;
+       
 
-        public OpenSslHelper(string opensslPath, string caCertPath, string caKeyPath, string certsRootFolder)
+        public OpenSslHelper()
         {
-            _opensslPath = opensslPath;
-            _caCertPath = caCertPath;
-            _caKeyPath = caKeyPath;
-            _certsRootFolder = certsRootFolder;
+            
         }
 
         // Helper function to encrypt a string and return Base64-encoded result
@@ -79,7 +73,7 @@ namespace MDE_API.Application.Services
         public bool GenerateClientCert(string clientName, out string clientFolder, out string error)
         {
             error = null;
-            clientFolder = Path.Combine(_certsRootFolder, clientName);
+            clientFolder = Path.Combine(@"C:\Program Files\OpenVPN\clients", clientName);
 
             try
             {
@@ -88,6 +82,8 @@ namespace MDE_API.Application.Services
                 string keyPath = Path.Combine(clientFolder, $"{clientName}.key");
                 string csrPath = Path.Combine(clientFolder, $"{clientName}.csr");
                 string crtPath = Path.Combine(clientFolder, $"{clientName}.crt");
+                string caPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\ca.crt";
+                string caKeyPath = @"C:\Program Files\OpenVPN\easy-rsa\pki\private\ca.key";
 
                 // 1. Generate client key
                 if (!RunCommand($"genrsa -out \"{keyPath}\" 2048", clientFolder, out error)) return false;
@@ -96,7 +92,7 @@ namespace MDE_API.Application.Services
                 if (!RunCommand($"req -new -key \"{keyPath}\" -out \"{csrPath}\" -subj \"/CN={clientName}\"", clientFolder, out error)) return false;
 
                 // 3. Sign with CA to produce client cert
-                if (!RunCommand($"x509 -req -in \"{csrPath}\" -CA \"{_caCertPath}\" -CAkey \"{_caKeyPath}\" -CAcreateserial -out \"{crtPath}\" -days 365 -sha256", clientFolder, out error)) return false;
+                if (!RunCommand($"x509 -req -in \"{csrPath}\" -CA \"{caPath}\" -CAkey \"{caKeyPath}\" -CAcreateserial -out \"{crtPath}\" -days 365 -sha256", clientFolder, out error)) return false;
 
                 return true;
             }
@@ -112,7 +108,7 @@ namespace MDE_API.Application.Services
             error = null;
             var psi = new ProcessStartInfo
             {
-                FileName = _opensslPath,
+                FileName = @"C:\Program Files\OpenSSL-Win64\bin\openssl.exe",
                 Arguments = args,
                 WorkingDirectory = workingDir,
                 RedirectStandardOutput = true,
