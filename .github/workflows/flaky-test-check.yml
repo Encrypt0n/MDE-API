@@ -106,7 +106,7 @@ jobs:
           {
               static void Main()
               {
-                  var assembly = Assembly.LoadFrom("../YourMainProject/bin/Release/net8.0/YourMainProject.dll");
+                  var assembly = Assembly.LoadFrom("../MDE_API/bin/Release/net8.0/MDE_API.dll");
                   var publicMethods = assembly.GetTypes()
                       .Where(t => t.IsPublic && !t.IsAbstract && !t.IsInterface)
                       .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
