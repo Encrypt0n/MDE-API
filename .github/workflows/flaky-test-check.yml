@@ -103,58 +103,74 @@ jobs:
           dotnet add CoverageChecker package System.Reflection.MetadataLoadContext
           cat > CoverageChecker/Program.cs <<'EOF'
           using System;
-          using System.Linq;
-          using System.Xml.Linq;
-          using System.Reflection;
-          using System.Runtime.Loader;
           using System.IO;
+          using System.Linq;
+          using System.Reflection;
           using System.Collections.Generic;
-
+          using System.Runtime.Loader;
+          using System.Xml.Linq;
+          using System.Reflection.Metadata;
+          using System.Reflection.PortableExecutable;
+          using System.Runtime.InteropServices;
+          using System.Reflection.MetadataLoadContext;
+          
           class Program
           {
               static void Main()
               {
-                  string dllPath = Path.GetFullPath("MDE_API/bin/Release/net8.0/MDE_API.dll");
-                  string[] allDlls = Directory.GetFiles(Path.GetDirectoryName(dllPath), "*.dll");
-
-                  var resolver = new PathAssemblyResolver(allDlls);
-                  using var context = new MetadataLoadContext(resolver);
-                  var assembly = context.LoadFromAssemblyPath(dllPath);
-
+                  var apiDllPath = Path.GetFullPath("MDE_API/bin/Release/net8.0/MDE_API.dll");
+          
+                  if (!File.Exists(apiDllPath))
+                  {
+                      Console.WriteLine($"❌ Could not find: {apiDllPath}");
+                      Environment.Exit(1);
+                  }
+          
+                  // Grab all assemblies needed from the shared runtime
+                  var runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
+                  var runtimeAssemblies = Directory.GetFiles(runtimeDir, "*.dll");
+          
+                  // Add project assemblies
+                  var projectAssemblies = Directory.GetFiles(Path.GetDirectoryName(apiDllPath)!, "*.dll");
+          
+                  var resolver = new PathAssemblyResolver(runtimeAssemblies.Concat(projectAssemblies));
+                  using var mlc = new MetadataLoadContext(resolver);
+          
+                  var assembly = mlc.LoadFromAssemblyPath(apiDllPath);
+          
                   var publicMethods = assembly.GetTypes()
                       .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && !t.IsGenericType)
                       .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
                       .Where(m => !m.IsSpecialName)
                       .Select(m => $"{m.DeclaringType.FullName}.{m.Name}")
                       .ToHashSet();
-
+          
                   Console.WriteLine($"✅ Found {publicMethods.Count} public methods.");
-
+          
                   var coveredMethods = new HashSet<string>();
-
+          
                   foreach (var file in Directory.GetFiles("coverage", "Coverage_*.cobertura.xml", SearchOption.AllDirectories))
                   {
                       var doc = XDocument.Load(file);
                       var methods = doc.Descendants("method");
-
+          
                       foreach (var m in methods)
                       {
                           var className = m.Parent?.Parent?.Attribute("name")?.Value;
                           var methodName = m.Attribute("name")?.Value;
                           var linesCovered = m.Elements("lines").Elements("line").Any(l => l.Attribute("hits")?.Value != "0");
-
+          
                           if (!string.IsNullOrWhiteSpace(className) && !string.IsNullOrWhiteSpace(methodName) && linesCovered)
                           {
                               coveredMethods.Add($"{className}.{methodName}");
                           }
                       }
                   }
-
+          
                   var uncovered = publicMethods.Except(coveredMethods).ToList();
-
-                  Console.WriteLine();
-                  Console.WriteLine("=== 🧪 Public Method Coverage Report ===");
-
+          
+                  Console.WriteLine("\n=== 🧪 Public Method Coverage Report ===");
+          
                   foreach (var method in publicMethods.OrderBy(m => m))
                   {
                       if (coveredMethods.Contains(method))
@@ -162,9 +178,9 @@ jobs:
                       else
                           Console.WriteLine($"❌ {method}");
                   }
-
+          
                   Console.WriteLine($"\nTotal: {publicMethods.Count}, Covered: {coveredMethods.Count}, Missing: {uncovered.Count}");
-
+          
                   if (uncovered.Count > 0)
                   {
                       Console.WriteLine("\n❌ The following public methods have no test coverage:");
@@ -178,6 +194,7 @@ jobs:
                   }
               }
           }
+
           EOF
 
       - name: Build and run checker
