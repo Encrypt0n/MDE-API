@@ -1,7 +1,7 @@
 name: Flaky Test Detector
 
 on:
-  workflow_dispatch:  # allows manual triggering
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        run: [1, 2, 3, 4, 5]  # Run tests 5 times
+        run: [1, 2, 3, 4, 5]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,3 +34,47 @@ jobs:
         with:
           name: test-results-run-${{ matrix.run }}
           path: '**/TestResults/*.trx'
+
+  summarize-results:
+    runs-on: ubuntu-latest
+    needs: run-tests-multiple-times
+    steps:
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: List all .trx files
+        run: find ./artifacts -name "*.trx"
+
+      - name: Install trx2junit
+        run: dotnet tool install --global trx2junit
+
+      - name: Convert .trx to .xml
+        run: |
+          for file in $(find ./artifacts -name "*.trx"); do
+            trx2junit "$file"
+          done
+
+      - name: Summary of test results
+        run: |
+          echo "### Flaky Test Run Summary" > summary.md
+          totalRuns=0
+          totalFailures=0
+          for file in $(find . -name "TestResults_*.xml"); do
+            echo "- Run ${file}:"
+            failures=$(grep -o "<failure>" "$file" | wc -l)
+            echo "  - Failures: $failures"
+            echo "- Run ${file##*/}: $failures failures" >> summary.md
+            totalRuns=$((totalRuns+1))
+            totalFailures=$((totalFailures+failures))
+          done
+          echo "- Total Runs: $totalRuns" >> summary.md
+          echo "- Total Failures: $totalFailures" >> summary.md
+          cat summary.md
+
+      - name: Upload summary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-test-summary
+          path: summary.md
