@@ -90,7 +90,7 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build main project
-        run: dotnet build ./YourMainProject.csproj -c Release
+        run: dotnet build ./MDE_API/MDE_API.csproj -c Release
 
       - name: Run public method test coverage check
         run: |
