@@ -77,32 +77,31 @@ jobs:
           echo "- Total Runs: $totalRuns"
           echo "- Total Failures: $totalFailures"
 
+      - name: Show uncovered public methods
+        run: |
+          echo "### 📣 Checking uncovered public methods"
+          if [ ! -f coverage-merged/Summary.xml ]; then
+            echo "❌ No merged coverage report found"
+            exit 1
+          fi
 
-           - name: Show uncovered public methods
-              run: |
-                echo "### 📣 Checking uncovered public methods"
-                if [ ! -f coverage-merged/Summary.xml ]; then
-                  echo "❌ No merged coverage report found"
-                  exit 1
-                fi
-      
-                # Parse coverage XML and extract methods with 0% coverage
-                echo "Uncovered methods:" > uncovered.txt
-                grep -oP '<Method .*?name="\K[^"]+' coverage-merged/Summary.xml | sort | uniq > all_methods.txt
-                grep -B1 '<Coverage>0</Coverage>' coverage-merged/Summary.xml | grep '<Method ' | grep -oP 'name="\K[^"]+' > uncovered_methods.txt
-      
-                echo "" && echo "### 🚫 Uncovered Methods:" && cat uncovered_methods.txt
-      
-                uncovered_count=$(wc -l < uncovered_methods.txt)
-                total_methods=$(wc -l < all_methods.txt)
-      
-                echo "" && echo "📊 Coverage Summary:"
-                echo "Total Methods: $total_methods"
-                echo "Uncovered Methods: $uncovered_count"
-      
-                if [ "$uncovered_count" -gt 0 ]; then
-                  echo "❌ Some public methods are not covered by tests."
-                  exit 1
-                else
-                  echo "🎉 All public methods are covered!"
-                fi
+          # Parse coverage XML and extract methods with 0% coverage
+          echo "Uncovered methods:" > uncovered.txt
+          grep -oP '<Method .*?name="\K[^"]+' coverage-merged/Summary.xml | sort | uniq > all_methods.txt
+          grep -B1 '<Coverage>0</Coverage>' coverage-merged/Summary.xml | grep '<Method ' | grep -oP 'name="\K[^"]+' > uncovered_methods.txt
+
+          echo "" && echo "### 🚫 Uncovered Methods:" && cat uncovered_methods.txt
+
+          uncovered_count=$(wc -l < uncovered_methods.txt)
+          total_methods=$(wc -l < all_methods.txt)
+
+          echo "" && echo "📊 Coverage Summary:"
+          echo "Total Methods: $total_methods"
+          echo "Uncovered Methods: $uncovered_count"
+
+          if [ "$uncovered_count" -gt 0 ]; then
+            echo "❌ Some public methods are not covered by tests."
+            exit 1
+          else
+            echo "🎉 All public methods are covered!"
+          fi
