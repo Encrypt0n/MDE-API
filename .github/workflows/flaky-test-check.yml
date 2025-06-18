@@ -35,7 +35,7 @@ jobs:
           name: test-results-run-${{ matrix.run }}
           path: '**/TestResults/*.trx'
 
-  summarize-results:
+    summarize-results:
     runs-on: ubuntu-latest
     needs: run-tests-multiple-times
     steps:
@@ -43,9 +43,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
-
-      - name: List all .trx files
-        run: find ./artifacts -name "*.trx"
 
       - name: Install trx2junit
         run: dotnet tool install --global trx2junit
@@ -56,25 +53,16 @@ jobs:
             trx2junit "$file"
           done
 
-      - name: Summary of test results
+      - name: Display summary in Actions log
         run: |
-          echo "### Flaky Test Run Summary" > summary.md
+          echo "### 🧪 Flaky Test Run Summary"
           totalRuns=0
           totalFailures=0
           for file in $(find . -name "TestResults_*.xml"); do
-            echo "- Run ${file}:"
             failures=$(grep -o "<failure>" "$file" | wc -l)
-            echo "  - Failures: $failures"
-            echo "- Run ${file##*/}: $failures failures" >> summary.md
+            echo "- 🧾 ${file##*/}: $failures failure(s)"
             totalRuns=$((totalRuns+1))
             totalFailures=$((totalFailures+failures))
           done
-          echo "- Total Runs: $totalRuns" >> summary.md
-          echo "- Total Failures: $totalFailures" >> summary.md
-          cat summary.md
-
-      - name: Upload summary as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: flaky-test-summary
-          path: summary.md
+          echo "- ✅ Total Runs: $totalRuns"
+          echo "- ❌ Total Failures: $totalFailures"
