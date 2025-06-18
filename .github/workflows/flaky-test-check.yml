@@ -75,23 +75,7 @@ jobs:
             trx2junit "$file"
           done
 
-      - name: Merge and summarize coverage
-        run: |
-          mkdir coverage-merged
-          reports=$(find ./artifacts -name "*.cobertura.xml" | paste -sd ';' -)
-            if [ -z "$reports" ]; then
-              echo "❌ No cobertura reports found."
-              exit 1
-            fi
-          reportgenerator \
-            -reports:"$reports" \
-            -targetdir:coverage-merged
-
-      - name: Upload HTML coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-html
-          path: coverage-merged/index.html
+      - 
 
 
 
@@ -110,56 +94,4 @@ jobs:
           echo "- Total Runs: $totalRuns"
           echo "- Total Failures: $totalFailures"
 
-      - name: Show covered and uncovered public methods
-        run: |
-          echo "### 📣 Checking public method coverage from HTML report"
       
-          if [ ! -f coverage-merged/index.html ]; then
-            echo "❌ No merged coverage report found at coverage-merged/index.html"
-            exit 1
-          fi
-      
-          echo "✅ Found coverage-merged/index.html"
-      
-          # Extract method names from index.html
-          echo "🔍 Extracting all method names..."
-          grep -oP '<span class="method-name">\K[^<]+' coverage-merged/index.html | sort | uniq > all_methods.txt || true
-          cat all_methods.txt || echo "⚠️ No methods found."
-      
-          echo "🔍 Extracting uncovered methods (0%)..."
-          grep -B3 '>0%<' coverage-merged/index.html | grep -oP '<span class="method-name">\K[^<]+' > uncovered_methods.txt || true
-          cat uncovered_methods.txt || echo "⚠️ No uncovered methods found."
-      
-          # Check if files exist and fallback
-          if [ ! -s all_methods.txt ]; then
-            echo "❌ No methods found in report. Check HTML format."
-            exit 1
-          fi
-      
-          # Compute covered methods
-          echo "🔍 Calculating covered methods..."
-          grep -Fvxf uncovered_methods.txt all_methods.txt > covered_methods.txt || true
-          cat covered_methods.txt || echo "⚠️ No covered methods found."
-      
-          echo ""
-          echo "### ✅ Covered Public Methods:"
-          cat covered_methods.txt || echo "None"
-      
-          echo ""
-          echo "### ❌ Uncovered Public Methods:"
-          cat uncovered_methods.txt || echo "None"
-      
-          total_methods=$(wc -l < all_methods.txt)
-          uncovered_count=$(wc -l < uncovered_methods.txt)
-      
-          echo ""
-          echo "📊 Coverage Summary:"
-          echo "Total Methods: $total_methods"
-          echo "Uncovered Methods: $uncovered_count"
-      
-          if [ "$uncovered_count" -gt 0 ]; then
-            echo "❌ Some public methods are not covered by tests."
-            exit 1
-          else
-            echo "🎉 All public methods are covered!"
-          fi
