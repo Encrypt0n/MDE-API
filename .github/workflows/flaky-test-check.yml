@@ -12,7 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         run: [1, 2, 3, 4, 5]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,7 +24,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Run tests with coverage (Run ${{ matrix.run }})
+      - name: Run tests with coverage and trx log (Run ${{ matrix.run }})
         run: >
           dotnet test
           --logger "trx;LogFileName=TestResults_${{ matrix.run }}.trx"
@@ -33,13 +32,14 @@ jobs:
           /p:CoverletOutputFormat=cobertura
           /p:CoverletOutput=./TestResults/Coverage_${{ matrix.run }}
 
-
-      - name: Upload test results
+      - name: Upload test results and coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-run-${{ matrix.run }}
-          path: '**/TestResults/*.trx'
+          name: test-run-${{ matrix.run }}
+          path: |
+            **/TestResults/TestResults_${{ matrix.run }}.trx
+            **/TestResults/Coverage_${{ matrix.run }}.cobertura.xml
 
   summarize-results:
     runs-on: ubuntu-latest
@@ -62,29 +62,24 @@ jobs:
             trx2junit "$file"
           done
 
-      - name: Display flaky test summary in Actions log
+      - name: Print flaky test summary in log
         run: |
-          echo ""
-          echo "============================="
-          echo "🧪 Flaky Test Run Summary"
-          echo "============================="
+          echo "### Flaky Test Run Summary"
           totalRuns=0
           totalFailures=0
           for file in $(find . -name "TestResults_*.xml"); do
+            runName=$(basename "$file" .xml)
             failures=$(grep -o "<failure>" "$file" | wc -l)
-            echo "• ${file##*/}: $failures failure(s)"
+            echo "- $runName: $failures failures"
             totalRuns=$((totalRuns+1))
             totalFailures=$((totalFailures+failures))
           done
-          echo "-----------------------------"
-          echo "✅ Total Runs: $totalRuns"
-          echo "❌ Total Failures: $totalFailures"
-          echo "============================="
+          echo "- Total Runs: $totalRuns"
+          echo "- Total Failures: $totalFailures"
 
-  assert-public-methods-tested:
+  check-coverage-against-public-methods:
     runs-on: ubuntu-latest
     needs: run-tests-multiple-times
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -94,51 +89,98 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build main project
-        run: dotnet build ./MDE_API/MDE_API.csproj -c Release
+      - name: Build for reflection
+        run: dotnet build MDE_API/MDE_API.csproj -c Release
 
-      - name: Run public method test coverage check
+      - name: Download coverage files
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage
+
+      - name: Create checker app
         run: |
-          dotnet new console -n CoverageCheckerApp
-          cd CoverageCheckerApp
-          cat > Program.cs <<EOF
+          mkdir CoverageChecker
+          cat > CoverageChecker/Program.cs <<'EOF'
           using System;
           using System.Linq;
-          using System.Reflection;
           using System.Xml.Linq;
+          using System.Reflection;
+          using System.Runtime.Loader;
+          using System.IO;
+          using System.Collections.Generic;
 
           class Program
           {
               static void Main()
               {
-                  var assembly = Assembly.LoadFrom("../MDE_API/bin/Release/net8.0/MDE_API.dll");
+                  string dllPath = Path.GetFullPath("MDE_API/bin/Release/net8.0/MDE_API.dll");
+                  string[] allDlls = Directory.GetFiles(Path.GetDirectoryName(dllPath), "*.dll");
+
+                  var resolver = new PathAssemblyResolver(allDlls);
+                  using var context = new MetadataLoadContext(resolver);
+                  var assembly = context.LoadFromAssemblyPath(dllPath);
+
                   var publicMethods = assembly.GetTypes()
-                      .Where(t => t.IsPublic && !t.IsAbstract && !t.IsInterface)
+                      .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && !t.IsGenericType)
                       .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
-                      .Select(m => m.DeclaringType.FullName + "::" + m.Name)
+                      .Where(m => !m.IsSpecialName)
+                      .Select(m => $"{m.DeclaringType.FullName}.{m.Name}")
                       .ToHashSet();
 
-                  var covered = XDocument.Load("../MDE_API.Tests/TestResults/Coverage_1.cobertura.xml")
-                      .Descendants("method")
-                      .Select(m => (string)m.Attribute("name"))
-                      .Where(n => !string.IsNullOrWhiteSpace(n))
-                      .ToHashSet();
+                  Console.WriteLine($"✅ Found {publicMethods.Count} public methods.");
 
-                  var uncovered = publicMethods.Except(covered).ToList();
+                  var coveredMethods = new HashSet<string>();
 
-                  if (uncovered.Any())
+                  foreach (var file in Directory.GetFiles("coverage", "Coverage_*.cobertura.xml", SearchOption.AllDirectories))
                   {
-                      Console.WriteLine("❌ The following public methods are not covered by tests:");
-                      foreach (var method in uncovered)
-                          Console.WriteLine(" - " + method);
+                      var doc = XDocument.Load(file);
+                      var methods = doc.Descendants("method");
+
+                      foreach (var m in methods)
+                      {
+                          var className = m.Parent?.Parent?.Attribute("name")?.Value;
+                          var methodName = m.Attribute("name")?.Value;
+                          var linesCovered = m.Elements("lines").Elements("line").Any(l => l.Attribute("hits")?.Value != "0");
+
+                          if (!string.IsNullOrWhiteSpace(className) && !string.IsNullOrWhiteSpace(methodName) && linesCovered)
+                          {
+                              coveredMethods.Add($"{className}.{methodName}");
+                          }
+                      }
+                  }
+
+                  var uncovered = publicMethods.Except(coveredMethods).ToList();
+
+                  Console.WriteLine();
+                  Console.WriteLine("=== 🧪 Public Method Coverage Report ===");
+
+                  foreach (var method in publicMethods.OrderBy(m => m))
+                  {
+                      if (coveredMethods.Contains(method))
+                          Console.WriteLine($"✅ {method}");
+                      else
+                          Console.WriteLine($"❌ {method}");
+                  }
+
+                  Console.WriteLine($"\nTotal: {publicMethods.Count}, Covered: {coveredMethods.Count}, Missing: {uncovered.Count}");
+
+                  if (uncovered.Count > 0)
+                  {
+                      Console.WriteLine("\n❌ The following public methods have no test coverage:");
+                      foreach (var m in uncovered)
+                          Console.WriteLine(" - " + m);
                       Environment.Exit(1);
                   }
                   else
                   {
-                      Console.WriteLine("✅ All public methods are covered by tests.");
+                      Console.WriteLine("🎉 All public methods are covered by tests!");
                   }
               }
           }
           EOF
-          dotnet run
 
+      - name: Build and run checker
+        run: |
+          dotnet new console -o CoverageChecker --force
+          dotnet build CoverageChecker
+          dotnet run --project CoverageChecker
