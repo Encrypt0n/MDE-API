@@ -99,7 +99,7 @@ jobs:
 
       - name: Create checker app
         run: |
-          mkdir CoverageChecker
+          dotnet new console -o CoverageChecker
           cat > CoverageChecker/Program.cs <<'EOF'
           using System;
           using System.Linq;
@@ -181,6 +181,5 @@ jobs:
 
       - name: Build and run checker
         run: |
-          dotnet new console -o CoverageChecker --force
           dotnet build CoverageChecker
           dotnet run --project CoverageChecker
