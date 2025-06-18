@@ -85,8 +85,7 @@ jobs:
             fi
           reportgenerator \
             -reports:"$reports" \
-            -targetdir:coverage-merged \
-            -reporttypes:TextSummary;Cobertura
+            -targetdir:coverage-merged
 
 
       - name: Print flaky test summary in log
