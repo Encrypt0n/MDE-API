@@ -108,18 +108,31 @@ jobs:
           echo "### 📣 Checking public method coverage from HTML report"
       
           if [ ! -f coverage-merged/index.html ]; then
-            echo "❌ No merged coverage report found"
+            echo "❌ No merged coverage report found at coverage-merged/index.html"
             exit 1
           fi
       
-          # Get all public methods listed in the HTML
-          grep -oP '<span class="method-name">\K[^<]+' coverage-merged/index.html | sort | uniq > all_methods.txt
+          echo "✅ Found coverage-merged/index.html"
       
-          # Get uncovered methods by looking for 0% in coverage table rows
-          grep -B2 '>0%<' coverage-merged/index.html | grep -oP '<span class="method-name">\K[^<]+' > uncovered_methods.txt
+          # Extract method names from index.html
+          echo "🔍 Extracting all method names..."
+          grep -oP '<span class="method-name">\K[^<]+' coverage-merged/index.html | sort | uniq > all_methods.txt || true
+          cat all_methods.txt || echo "⚠️ No methods found."
       
-          # Covered methods = all - uncovered
-          grep -Fvxf uncovered_methods.txt all_methods.txt > covered_methods.txt
+          echo "🔍 Extracting uncovered methods (0%)..."
+          grep -B3 '>0%<' coverage-merged/index.html | grep -oP '<span class="method-name">\K[^<]+' > uncovered_methods.txt || true
+          cat uncovered_methods.txt || echo "⚠️ No uncovered methods found."
+      
+          # Check if files exist and fallback
+          if [ ! -s all_methods.txt ]; then
+            echo "❌ No methods found in report. Check HTML format."
+            exit 1
+          fi
+      
+          # Compute covered methods
+          echo "🔍 Calculating covered methods..."
+          grep -Fvxf uncovered_methods.txt all_methods.txt > covered_methods.txt || true
+          cat covered_methods.txt || echo "⚠️ No covered methods found."
       
           echo ""
           echo "### ✅ Covered Public Methods:"
