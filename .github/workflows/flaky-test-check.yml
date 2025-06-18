@@ -103,28 +103,40 @@ jobs:
           echo "- Total Runs: $totalRuns"
           echo "- Total Failures: $totalFailures"
 
-      - name: Show uncovered public methods
+      - name: Show covered and uncovered public methods
         run: |
-          echo "### 📣 Checking uncovered public methods"
+          echo "### 📣 Checking public method coverage from HTML report"
+      
           if [ ! -f coverage-merged/index.html ]; then
             echo "❌ No merged coverage report found"
             exit 1
           fi
-
-          # Parse coverage XML and extract methods with 0% coverage
-          echo "Uncovered methods:" > uncovered.txt
+      
+          # Get all public methods listed in the HTML
           grep -oP '<span class="method-name">\K[^<]+' coverage-merged/index.html | sort | uniq > all_methods.txt
+      
+          # Get uncovered methods by looking for 0% in coverage table rows
           grep -B2 '>0%<' coverage-merged/index.html | grep -oP '<span class="method-name">\K[^<]+' > uncovered_methods.txt
-
-          echo "" && echo "### 🚫 Uncovered Methods:" && cat uncovered_methods.txt
-
-          uncovered_count=$(wc -l < uncovered_methods.txt)
+      
+          # Covered methods = all - uncovered
+          grep -Fvxf uncovered_methods.txt all_methods.txt > covered_methods.txt
+      
+          echo ""
+          echo "### ✅ Covered Public Methods:"
+          cat covered_methods.txt || echo "None"
+      
+          echo ""
+          echo "### ❌ Uncovered Public Methods:"
+          cat uncovered_methods.txt || echo "None"
+      
           total_methods=$(wc -l < all_methods.txt)
-
-          echo "" && echo "📊 Coverage Summary:"
+          uncovered_count=$(wc -l < uncovered_methods.txt)
+      
+          echo ""
+          echo "📊 Coverage Summary:"
           echo "Total Methods: $total_methods"
           echo "Uncovered Methods: $uncovered_count"
-
+      
           if [ "$uncovered_count" -gt 0 ]; then
             echo "❌ Some public methods are not covered by tests."
             exit 1
