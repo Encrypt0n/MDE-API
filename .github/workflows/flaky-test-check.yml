@@ -67,10 +67,16 @@ jobs:
       - name: Merge and summarize coverage
         run: |
           mkdir coverage-merged
+          reports=$(find ./artifacts -name "*.cobertura.xml" | paste -sd ';' -)
+            if [ -z "$reports" ]; then
+              echo "❌ No cobertura reports found."
+              exit 1
+            fi
           reportgenerator \
-            -reports:$(find ./artifacts -name "*.cobertura.xml" | tr '\n' ';') \
+            -reports:"$reports" \
             -targetdir:coverage-merged \
             -reporttypes:TextSummary;Xml
+
 
       - name: Print flaky test summary in log
         run: |
