@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests with coverage and trx log (Run ${{ matrix.run }})
         run: |
-          coverlet ./MDE_API.Tests/bin/Debug/net8.0/MDE_API.Tests.dll \
+          coverlet ./MDE_API.Tests/bin/Release/net8.0/MDE_API.Tests.dll \
             --target "dotnet" \
             --targetargs "test MDE_API.Tests/MDE_API.Tests.csproj --no-build --no-restore --logger \"trx;LogFileName=TestResults_${{ matrix.run }}.trx\"" \
             --format cobertura \
