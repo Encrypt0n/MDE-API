@@ -112,7 +112,6 @@ jobs:
           using System.Reflection.Metadata;
           using System.Reflection.PortableExecutable;
           using System.Runtime.InteropServices;
-          using System.Reflection.MetadataLoadContext;
           
           class Program
           {
