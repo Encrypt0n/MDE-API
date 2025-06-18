@@ -100,6 +100,7 @@ jobs:
       - name: Create checker app
         run: |
           dotnet new console -o CoverageChecker
+          dotnet add CoverageChecker package System.Reflection.MetadataLoadContext
           cat > CoverageChecker/Program.cs <<'EOF'
           using System;
           using System.Linq;
