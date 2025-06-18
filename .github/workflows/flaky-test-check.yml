@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         run: [1, 2, 3, 4, 5]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,11 +51,10 @@ jobs:
         with:
           path: ./artifacts
 
-      - name: List all .trx files
-        run: find ./artifacts -name "*.trx"
-
-      - name: Install trx2junit
-        run: dotnet tool install --global trx2junit
+      - name: Install tools
+        run: |
+          dotnet tool install --global trx2junit
+          dotnet tool install -g dotnet-reportgenerator-globaltool
 
       - name: Convert .trx to .xml
         run: |
@@ -62,9 +62,17 @@ jobs:
             trx2junit "$file"
           done
 
+      - name: Merge and summarize coverage
+        run: |
+          mkdir coverage-merged
+          reportgenerator \
+            -reports:$(find ./artifacts -name "*.cobertura.xml" | tr '\n' ';') \
+            -targetdir:coverage-merged \
+            -reporttypes:TextSummary;Xml
+
       - name: Print flaky test summary in log
         run: |
-          echo "### Flaky Test Run Summary"
+          echo "### 🔁 Flaky Test Run Summary"
           totalRuns=0
           totalFailures=0
           for file in $(find . -name "TestResults_*.xml"); do
@@ -77,138 +85,31 @@ jobs:
           echo "- Total Runs: $totalRuns"
           echo "- Total Failures: $totalFailures"
 
-  check-coverage-against-public-methods:
-    runs-on: ubuntu-latest
-    needs: run-tests-multiple-times
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
-
-      - name: Build for reflection
-        run: dotnet build MDE_API/MDE_API.csproj -c Release
-
-      - name: Download coverage files
-        uses: actions/download-artifact@v4
-        with:
-          path: coverage
-
-      - name: Create checker app
+      - name: Show uncovered public methods
         run: |
-          dotnet new console -o CoverageChecker
-          dotnet add CoverageChecker package System.Reflection.MetadataLoadContext
-          cat > CoverageChecker/Program.cs <<'EOF'
-          using System;
-          using System.IO;
-          using System.Linq;
-          using System.Reflection;
-          using System.Collections.Generic;
-          using System.Runtime.Loader;
-          using System.Xml.Linq;
-          
-          
-          class Program
-          {
-              static void Main()
-              {
-                  var apiDllPath = Path.GetFullPath("MDE_API/bin/Release/net8.0/MDE_API.dll");
-          
-                  if (!File.Exists(apiDllPath))
-                  {
-                      Console.WriteLine($"❌ Could not find: {apiDllPath}");
-                      Environment.Exit(1);
-                  }
-          
-                  // Grab runtime assemblies
-                  var runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
-                  var runtimeAssemblies = Directory.GetFiles(runtimeDir, "*.dll");
-          
-                  // Try to include ASP.NET Core shared assemblies if available
-                  string? aspnetShared = Path.Combine(runtimeDir, "..", "..", "shared", "Microsoft.AspNetCore.App");
-                  string? aspnetVersion = Directory.Exists(aspnetShared)
-                      ? Directory.GetDirectories(aspnetShared).OrderByDescending(v => v).FirstOrDefault()
-                      : null;
-          
-                  var aspnetAssemblies = aspnetVersion != null
-                      ? Directory.GetFiles(aspnetVersion, "*.dll")
-                      : Array.Empty<string>();
-          
-                  // Project output assemblies
-                  var projectAssemblies = Directory.GetFiles(Path.GetDirectoryName(apiDllPath)!, "*.dll");
-          
-                  // Resolve using all available assemblies
-                  var resolver = new PathAssemblyResolver(runtimeAssemblies.Concat(aspnetAssemblies).Concat(projectAssemblies));
-                  using var mlc = new MetadataLoadContext(resolver);
-          
-                  var assembly = mlc.LoadFromAssemblyPath(apiDllPath);
-          
-                  var publicMethods = assembly.GetTypes()
-                      .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && !t.IsGenericType)
-                      .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
-                      .Where(m => !m.IsSpecialName)
-                      .Select(m => $"{m.DeclaringType!.FullName}.{m.Name}")
-                      .ToHashSet();
-          
-                  Console.WriteLine($"✅ Found {publicMethods.Count} public methods.");
-          
-                  var coveredMethods = new HashSet<string>();
-          
-                  foreach (var file in Directory.GetFiles("coverage", "Coverage_*.cobertura.xml", SearchOption.AllDirectories))
-                  {
-                      var doc = XDocument.Load(file);
-                      var methods = doc.Descendants("method");
-          
-                      foreach (var m in methods)
-                      {
-                          var className = m.Parent?.Parent?.Attribute("name")?.Value;
-                          var methodName = m.Attribute("name")?.Value;
-                          var linesCovered = m.Elements("lines").Elements("line").Any(l => l.Attribute("hits")?.Value != "0");
-          
-                          if (!string.IsNullOrWhiteSpace(className) &&
-                              !string.IsNullOrWhiteSpace(methodName) &&
-                              linesCovered)
-                          {
-                              coveredMethods.Add($"{className}.{methodName}");
-                          }
-                      }
-                  }
-          
-                  var uncovered = publicMethods.Except(coveredMethods).ToList();
-          
-                  Console.WriteLine("\n=== 🧪 Public Method Coverage Report ===");
-          
-                  foreach (var method in publicMethods.OrderBy(m => m))
-                  {
-                      if (coveredMethods.Contains(method))
-                          Console.WriteLine($"✅ {method}");
-                      else
-                          Console.WriteLine($"❌ {method}");
-                  }
-          
-                  Console.WriteLine($"\nTotal: {publicMethods.Count}, Covered: {coveredMethods.Count}, Missing: {uncovered.Count}");
-          
-                  if (uncovered.Count > 0)
-                  {
-                      Console.WriteLine("\n❌ The following public methods have no test coverage:");
-                      foreach (var m in uncovered)
-                          Console.WriteLine(" - " + m);
-                      Environment.Exit(1);
-                  }
-                  else
-                  {
-                      Console.WriteLine("🎉 All public methods are covered by tests!");
-                  }
-              }
-          }
+          echo "### 📣 Checking uncovered public methods"
+          if [ ! -f coverage-merged/Summary.xml ]; then
+            echo "❌ No merged coverage report found"
+            exit 1
+          fi
 
+          # Parse coverage XML and extract methods with 0% coverage
+          echo "Uncovered methods:" > uncovered.txt
+          grep -oP '<Method .*?name="\K[^"]+' coverage-merged/Summary.xml | sort | uniq > all_methods.txt
+          grep -B1 '<Coverage>0</Coverage>' coverage-merged/Summary.xml | grep '<Method ' | grep -oP 'name="\K[^"]+' > uncovered_methods.txt
 
-          EOF
+          echo "" && echo "### 🚫 Uncovered Methods:" && cat uncovered_methods.txt
 
-      - name: Build and run checker
-        run: |
-          dotnet build CoverageChecker
-          dotnet run --project CoverageChecker
+          uncovered_count=$(wc -l < uncovered_methods.txt)
+          total_methods=$(wc -l < all_methods.txt)
+
+          echo "" && echo "📊 Coverage Summary:"
+          echo "Total Methods: $total_methods"
+          echo "Uncovered Methods: $uncovered_count"
+
+          if [ "$uncovered_count" -gt 0 ]; then
+            echo "❌ Some public methods are not covered by tests."
+            exit 1
+          else
+            echo "🎉 All public methods are covered!"
+          fi
