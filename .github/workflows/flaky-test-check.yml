@@ -109,9 +109,7 @@ jobs:
           using System.Collections.Generic;
           using System.Runtime.Loader;
           using System.Xml.Linq;
-          using System.Reflection.Metadata;
-          using System.Reflection.PortableExecutable;
-          using System.Runtime.InteropServices;
+          
           
           class Program
           {
@@ -125,14 +123,25 @@ jobs:
                       Environment.Exit(1);
                   }
           
-                  // Grab all assemblies needed from the shared runtime
+                  // Grab runtime assemblies
                   var runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
                   var runtimeAssemblies = Directory.GetFiles(runtimeDir, "*.dll");
           
-                  // Add project assemblies
+                  // Try to include ASP.NET Core shared assemblies if available
+                  string? aspnetShared = Path.Combine(runtimeDir, "..", "..", "shared", "Microsoft.AspNetCore.App");
+                  string? aspnetVersion = Directory.Exists(aspnetShared)
+                      ? Directory.GetDirectories(aspnetShared).OrderByDescending(v => v).FirstOrDefault()
+                      : null;
+          
+                  var aspnetAssemblies = aspnetVersion != null
+                      ? Directory.GetFiles(aspnetVersion, "*.dll")
+                      : Array.Empty<string>();
+          
+                  // Project output assemblies
                   var projectAssemblies = Directory.GetFiles(Path.GetDirectoryName(apiDllPath)!, "*.dll");
           
-                  var resolver = new PathAssemblyResolver(runtimeAssemblies.Concat(projectAssemblies));
+                  // Resolve using all available assemblies
+                  var resolver = new PathAssemblyResolver(runtimeAssemblies.Concat(aspnetAssemblies).Concat(projectAssemblies));
                   using var mlc = new MetadataLoadContext(resolver);
           
                   var assembly = mlc.LoadFromAssemblyPath(apiDllPath);
@@ -141,7 +150,7 @@ jobs:
                       .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && !t.IsGenericType)
                       .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
                       .Where(m => !m.IsSpecialName)
-                      .Select(m => $"{m.DeclaringType.FullName}.{m.Name}")
+                      .Select(m => $"{m.DeclaringType!.FullName}.{m.Name}")
                       .ToHashSet();
           
                   Console.WriteLine($"✅ Found {publicMethods.Count} public methods.");
@@ -159,7 +168,9 @@ jobs:
                           var methodName = m.Attribute("name")?.Value;
                           var linesCovered = m.Elements("lines").Elements("line").Any(l => l.Attribute("hits")?.Value != "0");
           
-                          if (!string.IsNullOrWhiteSpace(className) && !string.IsNullOrWhiteSpace(methodName) && linesCovered)
+                          if (!string.IsNullOrWhiteSpace(className) &&
+                              !string.IsNullOrWhiteSpace(methodName) &&
+                              linesCovered)
                           {
                               coveredMethods.Add($"{className}.{methodName}");
                           }
@@ -193,6 +204,7 @@ jobs:
                   }
               }
           }
+
 
           EOF
 
