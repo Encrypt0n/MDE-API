@@ -54,7 +54,9 @@ jobs:
         run: find ./artifacts -name "*.trx"
 
       - name: Install trx2junit
-        run: dotnet tool install --global trx2junit
+        run: |
+          dotnet tool install --global trx2junit
+          dotnet tool install -g dotnet-reportgenerator-globaltool
 
       - name: Convert .trx to .xml
         run: |
