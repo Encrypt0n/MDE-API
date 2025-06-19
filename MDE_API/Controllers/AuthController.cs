@@ -62,7 +62,7 @@ namespace MDE_API.Controllers
             if (principal == null)
                 return Unauthorized();
 
-            var companyIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "nbf")?.Value;
+            var companyIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "companyId")?.Value;
             if (string.IsNullOrEmpty(companyIdClaim) || !int.TryParse(companyIdClaim, out int companyId))
                 return Unauthorized();
 

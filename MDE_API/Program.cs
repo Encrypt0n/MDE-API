@@ -48,9 +48,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Role1Only", policy =>
-        policy.RequireClaim("typ", "1")); // or ClaimTypes.Role, depending on your JWT
+        policy.RequireClaim("role", "1")); // or ClaimTypes.Role, depending on your JWT
     options.AddPolicy("Role1and2Only", policy =>
-        policy.RequireClaim("typ", "1", "2")); // or ClaimTypes.Role, depending on your JWT
+        policy.RequireClaim("role", "1", "2")); // or ClaimTypes.Role, depending on your JWT
 });
 
 
