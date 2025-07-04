@@ -48,9 +48,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Role1Only", policy =>
-        policy.RequireClaim("role", "1")); // or ClaimTypes.Role, depending on your JWT
+        policy.RequireClaim("userRole", "1")); // or ClaimTypes.Role, depending on your JWT
     options.AddPolicy("Role1and2Only", policy =>
-        policy.RequireClaim("role", "1", "2")); // or ClaimTypes.Role, depending on your JWT
+        policy.RequireClaim("userRole", "1", "2")); // or ClaimTypes.Role, depending on your JWT
+    options.AddPolicy("Role1and2and4Only", policy =>
+        policy.RequireClaim("userRole", "1", "2", "4")); // or ClaimTypes.Role, depending on your JWT
 });
 
 
@@ -72,6 +74,7 @@ builder.Services.AddSingleton<IVPNRepository, VPNRepository>(); // If you also c
 
 builder.Services.AddSingleton<IOpenSslHelper,OpenSslHelper>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
+builder.Services.AddSingleton<IVPNClientNotifier, VPNClientNotifier>();
 
 builder.Services.AddHttpClient(); // for CloudflareDnsUpdater
 builder.Services.AddSingleton<IVPNClientConnectedObserver, CloudflareDnsUpdater>();

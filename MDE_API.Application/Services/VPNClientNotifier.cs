@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MDE_API.Application.Services
 {
-    public class VPNClientNotifier
+    public class VPNClientNotifier: IVPNClientNotifier
     {
         private readonly IEnumerable<IVPNClientConnectedObserver> _observers;
 

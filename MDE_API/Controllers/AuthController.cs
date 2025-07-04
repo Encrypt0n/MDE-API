@@ -27,6 +27,14 @@ namespace MDE_API.Controllers
             _machineRepository = machineRepository;
         }
 
+        [HttpGet("debug/claims")]
+        [Authorize]
+        public IActionResult DebugClaims()
+        {
+            return Ok(User.Claims.Select(c => new { c.Type, c.Value }));
+        }
+
+
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel model)
@@ -36,6 +44,15 @@ namespace MDE_API.Controllers
                 return Unauthorized("Invalid credentials.");
 
             var token = _jwtService.GenerateToken(user.UserID, user.Role, user.CompanyID);
+
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict, // or Lax depending on your needs
+                MaxAge = TimeSpan.FromHours(1),
+                Domain = ".mde-portal.site"
+            });
             //Debug.WriteLine(token);
             return Ok(new { token });
 

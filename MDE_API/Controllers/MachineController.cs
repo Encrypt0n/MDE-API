@@ -38,7 +38,7 @@ namespace MDE_API.Controllers
             return Ok(machines);
         }
 
-        [Authorize(Policy = "Role1and2Only")]
+        [Authorize(Policy = "Role1and2and4Only")]
         [HttpPost("{machineId}/dashboard-url")]
         public IActionResult UpdateDashboardUrl(int machineId, [FromBody] DashboardUrlUpdateModel model)
         {

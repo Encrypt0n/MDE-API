@@ -38,7 +38,7 @@ public class JWTService: IJWTService
             {
                 
                 new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Sub, userid.ToString()),
-                new Claim("role", role.ToString()),
+                new Claim("userRole", role.ToString()),
                 new Claim("companyId", companyId.ToString()),
                 new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             }),

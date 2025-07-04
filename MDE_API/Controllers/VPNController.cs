@@ -22,15 +22,17 @@ namespace MDE_API.Controllers
     public class VPNController : ControllerBase
     {
         private readonly IVPNService _vpnService;
+        private readonly IMachineService _machineService;
         private readonly ILogger<VPNController> _logger;
         private readonly IOpenSslHelper _helper;
         private readonly IFileSystem _fileSystem;
        
         private readonly IVPNClientNotifier _notifier;
 
-        public VPNController(IVPNService vpnService, ILogger<VPNController> logger, IOpenSslHelper helper, IFileSystem fileSystem, IVPNClientNotifier notifier)
+        public VPNController(IVPNService vpnService, ILogger<VPNController> logger, IOpenSslHelper helper, IFileSystem fileSystem, IVPNClientNotifier notifier, IMachineService machineService)
         {
             _vpnService = vpnService;
+            _machineService = machineService;
             _logger = logger;
             _helper = helper;
             _fileSystem = fileSystem;
@@ -67,13 +69,15 @@ namespace MDE_API.Controllers
             string clientName = model.ClientName;
             string[] parts = clientName.Split("machines_");
             string baseName = parts.Length > 1 ? parts[1] : clientName;
-            
 
-   
+            _logger.LogInformation("👤 baseName: {baseName}", baseName);
+
 
             int machineId = _vpnService.SaveClientConnection(baseName, model.Description, model.CompanyID, model.AssignedIp, model.UiBuilderUrls);
             _logger.LogInformation("✅ Client info saved successfully.");
             // 🔔 Notify observers
+            string domain = $"https://{baseName}.mde-portal.site:444";
+            _machineService.UpdateDashboardUrl(machineId, domain);
             _notifier.NotifyAsync(model, baseName, machineId);
 
             return Ok();
@@ -83,9 +87,11 @@ namespace MDE_API.Controllers
         [HttpGet("generate-cert/{clientName}/{companyName}/{subnet}/{user}")]
         public IActionResult GenerateCert(string clientName, string companyName, string subnet, bool user)
         {
-            companyName = companyName.Replace(" ", "_");
+            companyName = companyName.Replace(" ", "-");
             string certName;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? User.FindFirst("typ")?.Value;
+            _logger.LogInformation("User: {User.Claims} ", User.Claims);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? User.FindFirst("userRole")?.Value;
+            _logger.LogInformation("Role: {role} ", role);
             if (!user && role == "1")
             {
                 certName = $"{companyName}_machines_{clientName}";

@@ -18,6 +18,7 @@ namespace MDE_API.Controllers
             _companyService = companyService;
         }
 
+        [Authorize(Policy = "Role1Only")]
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
         {

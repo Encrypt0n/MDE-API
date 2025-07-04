@@ -16,6 +16,7 @@ namespace MDE_API.Tests
     public class VPNControllerTests
     {
         private readonly Mock<IVPNService> _vpnServiceMock;
+        private readonly Mock<IMachineService> _machineServiceMock;
         private readonly Mock<ILogger<VPNController>> _loggerMock;
         private readonly VPNController _controller;
         private readonly Mock<IOpenSslHelper> _helper;
@@ -26,12 +27,13 @@ namespace MDE_API.Tests
         public VPNControllerTests()
         {
             _vpnServiceMock = new Mock<IVPNService>();
+            _machineServiceMock = new Mock<IMachineService>();
             _loggerMock = new Mock<ILogger<VPNController>>();
             _helper = new Mock<IOpenSslHelper>();
             _mockFileSystem = new Mock<IFileSystem>();
          
             _vpnNotifier = new Mock<IVPNClientNotifier>();
-            _controller = new VPNController(_vpnServiceMock.Object, _loggerMock.Object, _helper.Object, _mockFileSystem.Object, _vpnNotifier.Object);
+            _controller = new VPNController(_vpnServiceMock.Object, _loggerMock.Object, _helper.Object, _mockFileSystem.Object, _vpnNotifier.Object, _machineServiceMock.Object);
         }
 
         [Fact]
@@ -42,6 +44,7 @@ namespace MDE_API.Tests
             var mockHelper = new Mock<IOpenSslHelper>();
             var mockFileSystem = new Mock<IFileSystem>();
             var mockVpnService = new Mock<IVPNService>();
+            var mockMachineService = new Mock<IMachineService>();
             var mockLogger = new Mock<ILogger<VPNController>>();
             var mockNotifier = new Mock<IVPNClientNotifier>(); // use interface version of VPNClientNotifier
 
@@ -50,7 +53,8 @@ namespace MDE_API.Tests
                 mockLogger.Object,
                 mockHelper.Object,
                 mockFileSystem.Object,
-                mockNotifier.Object
+                mockNotifier.Object,
+                mockMachineService.Object
             );
 
             var claims = new List<Claim>
@@ -106,6 +110,7 @@ namespace MDE_API.Tests
             var mockHelper = new Mock<IOpenSslHelper>();
             var mockFileSystem = new Mock<IFileSystem>();
             var mockVpnService = new Mock<IVPNService>();
+            var mockMachineService = new Mock<IMachineService>();   
             var mockLogger = new Mock<ILogger<VPNController>>();
             var mockNotifier = new Mock<IVPNClientNotifier>(); // use interface version of VPNClientNotifier
 
@@ -114,7 +119,8 @@ namespace MDE_API.Tests
                 mockLogger.Object,
                 mockHelper.Object,
                 mockFileSystem.Object,
-                mockNotifier.Object
+                mockNotifier.Object,
+                mockMachineService.Object
             );
 
             var claims = new List<Claim>

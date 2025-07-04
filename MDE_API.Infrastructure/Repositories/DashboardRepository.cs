@@ -77,7 +77,7 @@ namespace MDE_API.Infrastructure.Repositories
             con.Open();
 
             using var cmd = con.CreateCommand();
-            cmd.CommandText = @"SELECT TOP 1 PageURL FROM DashboardPages WHERE MachineID = @MachineID ORDER BY PageID ASC";
+            cmd.CommandText = @"SELECT DashboardUrl FROM Machines WHERE MachineID = @MachineID";
 
             cmd.Parameters.Add(new SqlParameter("@MachineID", machineId));
 

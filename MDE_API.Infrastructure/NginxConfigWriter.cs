@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +24,7 @@ namespace MDE_API.Infrastructure
             _logger = logger;
         }
 
-        public async Task OnClientConnectedAsync(VpnClientConnectModel model,string baseName, int machineId)
+        public async Task OnClientConnectedAsync(VpnClientConnectModel model, string baseName, int machineId)
         {
             string nodeRedDomain = $"{baseName}.mde-portal.site";
             string cameraDomain = $"{baseName}-camera.mde-portal.site";
@@ -37,7 +39,12 @@ server {{
     ssl_certificate      certs/mde-portal_chain.pem;
     ssl_certificate_key  certs/mde-portal_key.pem;
 
-    location ~ ^/([\w\-]+)$ {{
+     set $base_path """";
+if ($uri ~ ^/([\w\-]+)$) {{
+    set $base_path $1;
+}}
+
+    location ~ ^/([\w\-]+)/?$ {{
     proxy_pass_request_body off;
     proxy_set_header Content-Length """";
     set $machine_id {machineId};
@@ -55,16 +62,22 @@ server {{
     error_page 401 = @unauthorized;
 }}
 
-    location @auth_success {{
-    add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=30; SameSite=Strict"";
-    return 302 $uri/;
+ 
+location @auth_success {{
+    add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=3600s; SameSite=Strict; Secure; HttpOnly"";
+
+    proxy_pass http://{model.AssignedIp}:1880$request_uri;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection ""upgrade"";
 }}
 
     location @unauthorized {{
     return 401 ""Unauthorized"";
 }}
 
-    location ~ ^/([\w\-]+)/ {{
+  location ~ ^/.* {{
     if ($cookie_mde_auth_token = """") {{ return 403; }}
 
     proxy_pass http://{model.AssignedIp}:1880;
@@ -73,7 +86,6 @@ server {{
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection ""upgrade"";
 }}
-
   
 }}";
 
@@ -87,42 +99,51 @@ server {{
     ssl_certificate_key  certs/mde-portal_key.pem;
 
 
-location ~ ^/([\w\-]+)$ {{
-    proxy_pass_request_body off;
-    proxy_set_header Content-Length """";
-    set $machine_id {machineId};
+  location ~ ^/$ {{
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length """";
 
-    set $auth_token """";
-    if ($arg_token != """") {{
-        set $auth_token ""Bearer $arg_token"";
+        set $machine_id {machineId};
+        set $auth_token """";
+        if ($arg_token != """") {{
+            set $auth_token ""Bearer $arg_token"";
+        }}
+
+        proxy_set_header Authorization $auth_token;
+
+        proxy_intercept_errors on;
+        proxy_pass http://localhost:5000/api/auth/validate?machineId=$machine_id;
+
+        error_page 418 = @auth_success;
+        error_page 401 = @unauthorized;
     }}
-    proxy_set_header Authorization $auth_token;
 
-    proxy_intercept_errors on;
-    proxy_pass http://localhost:5000/api/auth/validate?machineId=$machine_id;
 
-    error_page 418 = @auth_success;
-    error_page 401 = @unauthorized;
-}}
-
+   # On token success: set auth cookie and forward request
     location @auth_success {{
-    add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=30; SameSite=Strict"";
-    return 302 $uri/;
-}}
+        add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=3600; SameSite=Strict; Secure; HttpOnly"";
+
+        proxy_pass http://{model.AssignedIp}$request_uri;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection ""upgrade"";
+    }}
 
     location @unauthorized {{
     return 401 ""Unauthorized"";
 }}
 
-    location ~ ^/([\w\-]+)/ {{
-    if ($cookie_mde_auth_token = """") {{ return 403; }}
+    # Generic fallback for all other paths — require auth cookie
+    location / {{
+        if ($cookie_mde_auth_token = """") {{
+            return 403;
+        }}
 
-    proxy_pass http://192.168.0.30:88;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection ""upgrade"";
-}}
+        proxy_pass http://{model.AssignedIp}$request_uri;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection ""upgrade"";
+    }}
 }}";
 
             string vncBlock = $@"
@@ -134,46 +155,65 @@ server {{
     ssl_certificate      certs/mde-portal_chain.pem;
     ssl_certificate_key  certs/mde-portal_key.pem;
 
-location ~ ^/([\w\-]+)$ {{
-    proxy_pass_request_body off;
-    proxy_set_header Content-Length """";
-    set $machine_id {machineId};
-
-    set $auth_token """";
-    if ($arg_token != """") {{
-        set $auth_token ""Bearer $arg_token"";
+  set $base_path """";
+    if ($uri ~ ^/([\w\-]+)) {{
+        set $base_path $1;
     }}
-    proxy_set_header Authorization $auth_token;
 
-    proxy_intercept_errors on;
-    proxy_pass http://localhost:5000/api/auth/validate?machineId=$machine_id;
+    # 1. First request with ?token=... to /novnc or /novnc/vnc.html
+    location ~ ^/([\w\.\-]+)/?$ {{
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length """";
 
-    error_page 418 = @auth_success;
-    error_page 401 = @unauthorized;
-}}
+        set $machine_id {machineId};
 
+        set $auth_token """";
+        if ($arg_token != """") {{
+            set $auth_token ""Bearer $arg_token"";
+        }}
+
+        proxy_set_header Authorization $auth_token;
+
+        proxy_intercept_errors on;
+        proxy_pass http://localhost:5000/api/auth/validate?machineId=$machine_id;
+
+        error_page 418 = @auth_success;
+        error_page 401 = @unauthorized;
+    }}
+
+  # 2. If authorized: set cookie and continue to real endpoint
     location @auth_success {{
-    add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=30; SameSite=Strict"";
-    return 302 $uri/;
-}}
+        add_header Set-Cookie ""mde_auth_token=$arg_token; Path=/; Max-Age=3600; SameSite=Strict; Secure; HttpOnly"";
 
+        proxy_pass http://{model.AssignedIp}:6080$request_uri;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection ""upgrade"";
+        proxy_read_timeout 60s;
+        proxy_set_header Sec-WebSocket-Extensions $http_sec_websocket_extensions;
+    }}
+
+    # 3. If unauthorized
     location @unauthorized {{
-    return 401 ""Unauthorized"";
-}}
+        return 401 ""Unauthorized"";
+    }}
 
 
-    location ~ ^/([\w\-]+)/ {{
-    if ($cookie_mde_auth_token = """") {{ return 403; }}
-    
+  # 4. Any other request — cookie must be present
+    location ~ ^/.* {{
+        if ($cookie_mde_auth_token = """") {{
+            return 403;
+        }}
 
- 
-
-    proxy_pass http://{model.AssignedIp}:6080;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection ""upgrade"";
-}}
+        proxy_pass http://{model.AssignedIp}:6080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection ""upgrade"";
+        proxy_read_timeout 60s;
+        proxy_set_header Sec-WebSocket-Extensions $http_sec_websocket_extensions;
+    }}
 }}";
 
             try
